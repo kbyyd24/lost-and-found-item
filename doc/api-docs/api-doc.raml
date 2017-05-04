@@ -1,0 +1,455 @@
+#%RAML 1.0
+title: Lost and Found Platform Item Module
+version: 0.1
+description: RESTful APIs for platform Item module
+protocols: HTTPS
+
+/items:
+  /lost:
+    get:
+      description: list of item be lost
+      queryParameters:
+        page:
+          description: page of list
+          default: 1
+          required: false
+          type: number
+        listSize:
+          description: numbers of response list size
+          default: 8
+          required: false
+          type: number
+        sort:
+          description: choose sort basis, could be create_time, end_time of begin_time
+          default: create_time
+          required: false
+          type: string
+      responses:
+        200:
+          description: get lost item success
+          body:
+            application/json:
+              type: LostItemResume
+        404:
+          description: page is out of bound
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: page out of bound
+    post:
+      description: create a lost item
+      headers:
+        username: string
+        user-token: string
+      body:
+        application/json:
+          type: LostItemCreater
+      responses:
+        200:
+          description: create success
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: publish success
+        400:
+          description: miss property in reqeust body
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: miss item name
+        401:
+          description: username, token not match, or user is offline
+          body:
+            application/json:
+              type: Message
+              examples:
+                unauthorized:
+                  msg: unauthorized
+                offline:
+                  msg: offline
+    /{itemId}:
+      description: an item resource
+      uriParameters:
+        itemId:
+          description: item's id
+          type: string
+      get:
+        description: get item detail message
+        responses:
+          200:
+            description: get message success
+            body:
+              application/json:
+                type: LostItemDetail
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      put:
+        description: update item detail message
+        headers:
+          username: string
+          user-token: string
+        body:
+          application/json:
+            type: LostItemCreater
+        responses:
+          200:
+            description: update success
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: update success
+          400:
+            description: miss property in request body
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: miss some message
+          401:
+            description: username and token not match or user is offline or user is not owner of the item
+            body:
+              application/json:
+                type: Message
+                examples:
+                  unauthorized:
+                    msg: unauthorzied
+                  offline:
+                    msg: offline
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      delete:
+        description: close or found item
+        headers:
+          username: string
+          user-token: string
+        queryParameters:
+          type:
+            description: should be `close` or `found`
+            type: string
+            required: true
+        responses:
+          200:
+            description: delete success
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: close success
+          400:
+            description: miss queryParameters
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: miss query parameter
+          401:
+            description: username and token not match or user is offline or user is not owner of the item
+            body:
+              application/json:
+                type: Message
+                examples:
+                  unauthorized:
+                    msg: unauthorized
+                  offline:
+                    msg: offline
+          403:
+            description: Forbidden request cause item has enable return application if type is close or item has not enable return application if type is found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: couldn't close
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      /returns:
+        description: some one found the item, could use this URI to apply return it
+        get:
+          description: only item owner can do this. Get all returns as list, include closed return application
+          headers:
+            username: string
+            user-token: string
+          responses:
+            200:
+              description: get list success
+              body:
+                application/json:
+                  type: Return[]
+            401:
+              description: username and token not match or user is offline or user is not owner of the item
+              body:
+                application/json:
+                  type: Message
+                  examples:
+                    unauthorized:
+                      msg: unauthorized
+                    offline:
+                      msg: offline
+            404:
+              description: item is not found
+              body:
+                application/json:
+                  type: Message
+                  example:
+                    msg: item not found
+        post:
+          description: apply to return the item
+          headers:
+            username: string
+            user-token: string
+          body:
+            application/json:
+              type: ReturnCreater
+          responses:
+            200:
+              description: apply success
+              body:
+                application/json:
+                  type: Message
+                  example:
+                    msg: apply success
+            401:
+              description: username and token not match or user is offline or user is owner of the item
+              body:
+                application/json:
+                  type: Message
+                  example:
+                    msg: unauthorized
+        /{returnId}:
+          uriParameters:
+            returnId:
+              description: return application id
+              type: number
+          description: return application
+          get:
+            description: get detail of return application
+            headers:
+              username: string
+              user-token: string
+            responses:
+              200:
+                description: get return application success
+                body:
+                  application/json:
+                    type: ReturnDetail
+              401:
+                description: username and token not match or user is offline or user is not owner of the item or return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unauthorized
+              404:
+                description: item of return application is not found
+                body:
+                  application/json:
+                    type: Message
+                    examples:
+                      item_not_found:
+                        msg: item not found
+                      return_not_found:
+                        msg: return application not found
+          put:
+            description: update return application
+            headers:
+              username: string
+              user-token: string
+            body:
+              application/json:
+                type: ReturnDetail
+            responses:
+              200:
+                description: update success
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: update success
+              401:
+                description: username and token not match or user is offline or user is not owner of the return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unauthorized
+              404:
+                description: item or return application not found
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item not found
+          delete:
+            description: reject, accept or cancel the return application
+            headers:
+              username: string
+              user-token: string
+              action-type:
+                description: reject, accept or cancel. If user is return application owner, ignore this.
+                type: string
+                required: false
+            responses:
+              200:
+                description: reject, accept or cancel success
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: accept success
+              400:
+                description: user is item's owner, but miss action-type header
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: miss header
+              401:
+                description: username and token not match or user is offline or user is not owner of item or return application or user choose unauthorized action
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unuseable action
+              404:
+                description: item or return application not found
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item not found
+          
+
+  /found:
+    get:
+      description: list of item be found
+
+types:
+  LostItemDetail:
+    description: detail message of item which is lost
+    type: object
+    properties:
+      title: string
+      owner:
+        description: publisher's username
+        type: string
+      itemName: string
+      createTime: number
+      beginTime: number
+      endTime: number
+      description: string
+      pictures: string[]
+    example:
+      title: I'm looking for my basketball
+      owner: melo
+      itemName: baskateball
+      createTime: 32
+      beginTime: 12
+      endTime:  24
+      description: I can't find my basketball now. Last time I saw it is yesterday at SWPU.
+      pictures:
+        - http://qiniu.com/1.jpg
+        - http://qiniu.com/2.jpg
+  LostItemCreater:
+    description: creater to post include item's all message
+    type: object
+    properties:
+      title: string
+      itemName: string
+      beginTime: number
+      endTime: number
+      description: string
+      pictures: string[]
+    example:
+      title: I'm look for my basketball
+      itemName: basketball
+      beginTime: 12
+      endTime: 24
+      description: I can't find my basketball now. Last time I saw it is yesterday at SWPU.
+      pictures:
+        - http://qiniu.com/1.jpg
+        - http://qiniu.com/2.jpg
+  LostItemResume:
+    description: simple message of item which is lost
+    type: object
+    properties:
+      title: string
+      itemName: string
+      createTime: number
+      beginTime: number
+      endTime: number
+      picture: string
+    example:
+      title: I'm looking for my basketball
+      itemName: basketball
+      createTime: 32
+      beginTime: 12
+      endTime: 24
+      picture: http://qiniu.com/1.jpg
+  Message:
+    type: object
+    properties:
+      msg: string
+  Return:
+    type: object
+    properties:
+      id: number
+      returnUser:
+        description: username of the user apply to return
+        type: string
+      applyTime: number
+      result:
+        description: result of this application
+        type: boolean
+    examples:
+      reject:
+        id: 1
+        returnUser: kbyyd24
+        applyTime: 43
+        result: false
+      accept:
+        id: 2
+        returnUser: jack
+        applyTime: 54
+        result: true
+  ReturnDetail:
+    type: object
+    properties:
+      id: number
+      returnUser: string
+      applyTime: number
+      reason: string
+      contact: string
+      result: boolean
+    example:
+      id: 2
+      returnUser: jack
+      applyTime: 54
+      reason: balabala
+      contact: melo@gaoyuexiang.cn
+      result: false
+  ReturnCreater:
+    type: object
+    properties:
+      reason: string
+      contact: string
+    example:
+      reason: reason
+      contact: contact
