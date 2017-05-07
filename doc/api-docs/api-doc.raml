@@ -7,15 +7,17 @@ protocols: HTTPS
 /items:
   /lost:
     get:
-      description: list of item be lost
+      description: get list of items be lost and state is enable
       queryParameters:
         page:
           description: page of list
+          minimum: 1
           default: 1
           required: false
           type: number
         listSize:
-          description: numbers of response list size
+          description: numbers of response list
+          minimum: 1
           default: 8
           required: false
           type: number
@@ -30,6 +32,13 @@ protocols: HTTPS
           body:
             application/json:
               type: LostItemResume
+        400:
+          description: set page or listSize but less to the minimum value
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: page value is invalid
         404:
           description: page is out of bound
           body:
@@ -50,9 +59,7 @@ protocols: HTTPS
           description: create success
           body:
             application/json:
-              type: Message
-              example:
-                msg: publish success
+              type: LostItemDetail
         400:
           description: miss property in reqeust body
           body:
@@ -61,7 +68,7 @@ protocols: HTTPS
               example:
                 msg: miss item name
         401:
-          description: username, token not match, or user is offline
+          description: username and token not match, or user is offline
           body:
             application/json:
               type: Message
@@ -75,7 +82,7 @@ protocols: HTTPS
       uriParameters:
         itemId:
           description: item's id
-          type: string
+          type: number
       get:
         description: get item detail message
         responses:
@@ -104,9 +111,7 @@ protocols: HTTPS
             description: update success
             body:
               application/json:
-                type: Message
-                example:
-                  msg: update success
+                type: LostItemDetail
           400:
             description: miss property in request body
             body:
@@ -115,7 +120,7 @@ protocols: HTTPS
                 example:
                   msg: miss some message
           401:
-            description: username and token not match or user is offline or user is not owner of the item
+            description: username and token not match, or user is offline, or user is not owner of the item
             body:
               application/json:
                 type: Message
@@ -132,30 +137,16 @@ protocols: HTTPS
                 example:
                   msg: item not found
       delete:
-        description: close or found item
+        description: close item
         headers:
           username: string
           user-token: string
-        queryParameters:
-          type:
-            description: should be `close` or `found`
-            type: string
-            required: true
         responses:
           200:
             description: delete success
             body:
               application/json:
-                type: Message
-                example:
-                  msg: close success
-          400:
-            description: miss queryParameters
-            body:
-              application/json:
-                type: Message
-                example:
-                  msg: miss query parameter
+                type: LostItemDetail
           401:
             description: username and token not match or user is offline or user is not owner of the item
             body:
@@ -167,7 +158,7 @@ protocols: HTTPS
                   offline:
                     msg: offline
           403:
-            description: Forbidden request cause item has enable return application if type is close or item has not enable return application if type is found
+            description: Forbidden request cause item has enable return application
             body:
               application/json:
                 type: Message
@@ -193,6 +184,16 @@ protocols: HTTPS
               body:
                 application/json:
                   type: Return[]
+                  example:
+                    - returnUser: kbyyd24
+                      applyTime: 43
+                      state: reject
+                    - returnUser: jack
+                      applyTime: 54
+                      state: accept
+                    - returnUser: melo
+                      applyTime: 56
+                      state: uncheck
             401:
               description: username and token not match or user is offline or user is not owner of the item
               body:
@@ -210,34 +211,11 @@ protocols: HTTPS
                   type: Message
                   example:
                     msg: item not found
-        post:
-          description: apply to return the item
-          headers:
-            username: string
-            user-token: string
-          body:
-            application/json:
-              type: ReturnCreater
-          responses:
-            200:
-              description: apply success
-              body:
-                application/json:
-                  type: Message
-                  example:
-                    msg: apply success
-            401:
-              description: username and token not match or user is offline or user is owner of the item
-              body:
-                application/json:
-                  type: Message
-                  example:
-                    msg: unauthorized
-        /{returnId}:
+        /{username}:
           uriParameters:
-            returnId:
-              description: return application id
-              type: number
+            username:
+              description: return application creator's username
+              type: string
           description: return application
           get:
             description: get detail of return application
@@ -268,21 +246,19 @@ protocols: HTTPS
                       return_not_found:
                         msg: return application not found
           put:
-            description: update return application
+            description: update or create return application
             headers:
               username: string
               user-token: string
             body:
               application/json:
-                type: ReturnDetail
+                type: ReturnCreater
             responses:
               200:
                 description: update success
                 body:
                   application/json:
-                    type: Message
-                    example:
-                      msg: update success
+                    type: ReturnDetail
               401:
                 description: username and token not match or user is offline or user is not owner of the return application
                 body:
@@ -290,8 +266,15 @@ protocols: HTTPS
                     type: Message
                     example:
                       msg: unauthorized
+              403:
+                description: If item is closed, return was accepted or sth else due to can not update return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item is closed
               404:
-                description: item or return application not found
+                description: item not found
                 body:
                   application/json:
                     type: Message
@@ -303,7 +286,7 @@ protocols: HTTPS
               username: string
               user-token: string
               action-type:
-                description: reject, accept or cancel. If user is return application owner, ignore this.
+                description: Cloud be `reject`, `accept` or `cancel`. If user is return application owner, ignore this.
                 type: string
                 required: false
             responses:
@@ -311,9 +294,7 @@ protocols: HTTPS
                 description: reject, accept or cancel success
                 body:
                   application/json:
-                    type: Message
-                    example:
-                      msg: accept success
+                    type: ReturnDetail
               400:
                 description: user is item's owner, but miss action-type header
                 body:
@@ -328,6 +309,13 @@ protocols: HTTPS
                     type: Message
                     example:
                       msg: unuseable action
+              403:
+                description: If item is closed, return was accepted or sth else due to can not close return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item is closed
               404:
                 description: item or return application not found
                 body:
@@ -335,17 +323,332 @@ protocols: HTTPS
                     type: Message
                     example:
                       msg: item not found
-          
 
   /found:
     get:
-      description: list of item be found
+      description: get list of items be found and state is enable
+      queryParameters:
+        page:
+          description: page of list
+          default: 1
+          required: false
+          type: number
+        listSize:
+          description: numbers of response list size
+          default: 8
+          required: false
+          type: number
+        sort:
+          description: choose sort basis, could be create_time, end_time of begin_time
+          default: create_time
+          required: false
+          type: string
+      responses:
+        200:
+          description: get found item success
+          body:
+            application/json:
+              type: FoundItemResume[]
+              example:
+                - id: 123
+                  title: I found a basketball
+                  itemName: basketball
+                  createTime: 34
+                  foundTime: 28
+                  picture: http://qiniu.com/3.jpg
+        400:
+          description: set page or listSize but less to the minimum value
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: page value is invalid
+        404:
+          description: page is out of bound
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: page out of bound
+    post:
+      description: create a found item
+      headers:
+        username: string
+        user-token: string
+      body:
+        application/json:
+          type: FoundItemCreater
+      responses:
+        200:
+          description: create success
+          body:
+            application/json:
+              type: FoundItemDetail
+        400:
+          description: miss property in reqeust body
+          body:
+            application/json:
+              type: Message
+              example:
+                msg: miss item name
+        401:
+          description: username, token not match, or user is offline
+          body:
+            application/json:
+              type: Message
+              examples:
+                unauthorized:
+                  msg: unauthorized
+                offline:
+                  msg: offline
+    /{itemId}:
+      description: an found item resource
+      uriParameters:
+        itemId:
+          description: item's id
+          type: string
+      get:
+        description: get item detail message
+        responses:
+          200:
+            description: get message success
+            body:
+              application/json:
+                type: FoundItemDetail
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      put:
+        description: update item detail message
+        headers:
+          username: string
+          user-token: string
+        body:
+          application/json:
+            type: FoundItemCreater
+        responses:
+          200:
+            description: update success
+            body:
+              application/json:
+                type: FoundItemDetail
+          400:
+            description: miss property in request body
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: miss some message
+          401:
+            description: username and token not match or user is offline or user is not owner of the item
+            body:
+              application/json:
+                type: Message
+                examples:
+                  unauthorized:
+                    msg: unauthorzied
+                  offline:
+                    msg: offline
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      delete:
+        description: close item
+        headers:
+          username: string
+          user-token: string
+        responses:
+          200:
+            description: delete success
+            body:
+              application/json:
+                type: FoundItemDetail
+          401:
+            description: username and token not match or user is offline or user is not owner of the item
+            body:
+              application/json:
+                type: Message
+                examples:
+                  unauthorized:
+                    msg: unauthorized
+                  offline:
+                    msg: offline
+          403:
+            description: Forbidden request cause item has enable claim application
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: couldn't close
+          404:
+            description: item not found
+            body:
+              application/json:
+                type: Message
+                example:
+                  msg: item not found
+      /claim:
+        description: some one think the thing is that he lost, claim ownership
+        get:
+          description: only item owner can do this. Get all returns as list, include closed return application
+          headers:
+            username: string
+            user-token: string
+          responses:
+            200:
+              description: get list success
+              body:
+                application/json:
+                  type: Claim[]
+                  example:
+                    - username: melo
+                      applyTime: 36
+                      state: uncheck
+            401:
+              description: username and token not match or user is offline or user is not owner of the item
+              body:
+                application/json:
+                  type: Message
+                  examples:
+                    unauthorized:
+                      msg: unauthorized
+                    offline:
+                      msg: offline
+            404:
+              description: item is not found
+              body:
+                application/json:
+                  type: Message
+                  example:
+                    msg: item not found
+        /{username}:
+          uriParameters:
+            username:
+              description: application creator's username
+              type: string
+          description: claim detail
+          get:
+            description: get detail of return application, only item owner or claim owner can get this
+            headers:
+              username: string
+              user-token: string
+            responses:
+              200:
+                description: get claim application success
+                body:
+                  application/json:
+                    type: ClaimDetail
+              401:
+                description: username and token not match or user is offline or user is not owner of the item or return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unauthorized
+              404:
+                description: item of return application is not found
+                body:
+                  application/json:
+                    type: Message
+                    examples:
+                      item_not_found:
+                        msg: item not found
+                      return_not_found:
+                        msg: return application not found
+          put:
+            description: update or create claim application
+            headers:
+              username: string
+              user-token: string
+            body:
+              application/json:
+                type: ClaimCreator
+            responses:
+              200:
+                description: update success
+                body:
+                  application/json:
+                    type: ClaimDetail
+              401:
+                description: username and token not match or user is offline or user is not owner of the return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unauthorized
+              403:
+               description: If item is closed, claim was accepted or sth else due to can not update claim application
+               body:
+                application/json:
+                  type: Message
+                  example:
+                    msg: item is closed
+              404:
+                description: item or claim application not found
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item not found
+          delete:
+            description: reject, accept or cancel the claim application
+            headers:
+              username: string
+              user-token: string
+              action-type:
+                description: could be `reject`, `accept` or `cancel`. If user is claim application owner, ignore this.
+                type: string
+                required: false
+            responses:
+              200:
+                description: reject, accept or cancel success
+                body:
+                  application/json:
+                    type: ClaimDetail
+              400:
+                description: user is item's owner, but miss action-type header
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: miss header
+              401:
+                description: username and token not match or user is offline or user is not owner of item or return application or user choose unauthorized action
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: unuseable action
+              403:
+                description: If item is closed, return was accepted or sth else due to can not close return application
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item is closed
+              404:
+                description: item or claim application not found
+                body:
+                  application/json:
+                    type: Message
+                    example:
+                      msg: item not found
+
 
 types:
   LostItemDetail:
     description: detail message of item which is lost
     type: object
     properties:
+      id: number
       title: string
       owner:
         description: publisher's username
@@ -356,7 +659,11 @@ types:
       endTime: number
       description: string
       pictures: string[]
+      state:
+        description: item state, could be `enable`, `closed` or `returned`
+        type: string
     example:
+      id: 123
       title: I'm looking for my basketball
       owner: melo
       itemName: baskateball
@@ -367,6 +674,7 @@ types:
       pictures:
         - http://qiniu.com/1.jpg
         - http://qiniu.com/2.jpg
+      state: enable
   LostItemCreater:
     description: creater to post include item's all message
     type: object
@@ -390,6 +698,7 @@ types:
     description: simple message of item which is lost
     type: object
     properties:
+      id: number
       title: string
       itemName: string
       createTime: number
@@ -397,6 +706,7 @@ types:
       endTime: number
       picture: string
     example:
+      id: 123
       title: I'm looking for my basketball
       itemName: basketball
       createTime: 32
@@ -410,25 +720,24 @@ types:
   Return:
     type: object
     properties:
-      id: number
       returnUser:
         description: username of the user apply to return
         type: string
       applyTime: number
-      result:
-        description: result of this application
-        type: boolean
+      state: string
     examples:
       reject:
-        id: 1
         returnUser: kbyyd24
         applyTime: 43
-        result: false
+        state: reject
       accept:
-        id: 2
         returnUser: jack
         applyTime: 54
-        result: true
+        state: accept
+      uncheck:
+        returnUser: melo
+        applyTime: 56
+        state: uncheck
   ReturnDetail:
     type: object
     properties:
@@ -437,14 +746,14 @@ types:
       applyTime: number
       reason: string
       contact: string
-      result: boolean
+      state: string
     example:
       id: 2
       returnUser: jack
       applyTime: 54
       reason: balabala
       contact: melo@gaoyuexiang.cn
-      result: false
+      state: uncheck
   ReturnCreater:
     type: object
     properties:
@@ -453,3 +762,94 @@ types:
     example:
       reason: reason
       contact: contact
+  FoundItemResume:
+    description: Founded item resume message
+    type: object
+    properties:
+      id: number
+      title: string
+      itemName: string
+      createTime: number
+      foundTime: number
+      picture: string
+    example:
+      id: 123
+      title: I found a basketball
+      itemName: basketball
+      createTime: 34
+      foundTime: 28
+      picture: http://qiniu.com/3.jpg
+  FoundItemCreater:
+    type: object
+    properties:
+      title: string
+      itemName: string
+      foundTime: number
+      description: string
+      pictures: string[]
+    example:
+      title: I found a basketball
+      itemName: basketball
+      foundTime: 28
+      description: I found that at ...
+      pictures:
+        - http://qiniu.com/3.jpg
+        - http://qiniu.com/4.jpg
+  FoundItemDetail:
+    type: object
+    properties:
+      id: number
+      title: string
+      owner: string
+      itemName: string
+      createTime: number
+      foundTime: number
+      description: string
+      pictures: string[]
+      state:
+        description: could be `enable`, `closed` or `claimed`
+        type: string
+    example:
+      id: 123
+      title: I found a basketball
+      owner: jack
+      itemName: basketball
+      createTime: 34
+      foundTime: 28
+      description: I found that at ...
+      pictures:
+        - http://qiniu.com/3.jpg
+        - http://qiniu.com/4.jpg
+      state: enable
+  Claim:
+    type: object
+    properties:
+      username: string
+      applyTime: number
+      state: string
+    example:
+      username: melo
+      applyTime: 36
+      state: uncheck
+  ClaimDetail:
+    type: object
+    properties:
+      username: string
+      applyTime: number
+      reason: string
+      contact: string
+      state: string
+    example:
+      username: melo
+      applyTime: 36
+      reason: balabala
+      contact: melo@gaoyuexiang.cn
+      state: uncheck
+  ClaimCreator:
+    type: object
+    properties:
+      reason: string
+      contact: string
+    example:
+      reason: balabala
+      contact: melo@gaoyuexiang.cn
