@@ -23,7 +23,10 @@ public class LostItem {
   @Column(length = 1024)
   private String description;
   private String state;
-  private String[] pictures;
+
+  @ElementCollection
+  @CollectionTable(name = "lost_picture")
+  private List<String> pictures;
 
   public LostItem() {}
 
@@ -99,11 +102,11 @@ public class LostItem {
     this.state = state;
   }
 
-  public String[] getPictures() {
+  public List<String> getPictures() {
     return pictures;
   }
 
-  public void setPictures(String[] pictures) {
+  public void setPictures(List<String> pictures) {
     this.pictures = pictures;
   }
 
