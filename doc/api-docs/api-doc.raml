@@ -175,6 +175,24 @@ protocols: HTTPS
         description: some one found the item, could use this URI to apply return it
         get:
           description: only item owner can do this. Get all returns as list, include closed return application
+          queryParameters:
+            page:
+              description: page of list
+              minimum: 1
+              default: 1
+              required: false
+              type: number
+            listSize:
+              description: numbers of response list
+              minimum: 1
+              default: 8
+              required: false
+              type: number
+            sort:
+              description: sort by apply time, could be `earliest` or `latest`
+              default: earliest
+              required: false
+              type: string
           headers:
             username: string
             user-token: string
@@ -499,6 +517,24 @@ protocols: HTTPS
         description: some one think the thing is that he lost, claim ownership
         get:
           description: only item owner can do this. Get all returns as list, include closed return application
+          queryParameters:
+            page:
+              description: page of list
+              minimum: 1
+              default: 1
+              required: false
+              type: number
+            listSize:
+              description: numbers of response list
+              minimum: 1
+              default: 8
+              required: false
+              type: number
+            sort:
+              description: sort by apply time, could be `earliest` or `latest`
+              default: latest
+              required: false
+              type: string
           headers:
             username: string
             user-token: string
