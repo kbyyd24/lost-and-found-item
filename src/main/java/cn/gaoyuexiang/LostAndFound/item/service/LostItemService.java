@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface LostItemService {
 
-  LostItem create(LostItemCreator lostItemCreator);
+  LostItem create(LostItemCreator lostItemCreator, String createUser);
 
   List<LostItem> loadPage(int page, int listSize, String sort);
 
