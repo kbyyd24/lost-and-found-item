@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface FoundItemRepo extends PagingAndSortingRepository<FoundItem, Long> {
 
-  @Query("select foundItem from FoundItem")
+  @Query("select foundItem from FoundItem foundItem")
   List<FoundItem> findAll(Sort sort, Pageable pageable);
 
   FoundItem findById(long id);
