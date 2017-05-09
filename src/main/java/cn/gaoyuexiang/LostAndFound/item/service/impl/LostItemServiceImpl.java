@@ -3,6 +3,7 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.LostItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LostItemServiceImpl implements LostItemService {
@@ -82,10 +84,13 @@ public class LostItemServiceImpl implements LostItemService {
   }
 
   @Override
-  public List<LostItem> loadPage(int page, int listSize, ItemSort sort) {
+  public List<LostItemPageItem> loadPage(int page, int listSize, ItemSort sort) {
     PageRequest pageRequest = new PageRequest(page, listSize);
     Sort orders = new Sort(Sort.Direction.DESC, this.sortPropMap.get(sort));
-    return lostItemRepo.findAll(orders, pageRequest);
+    List<LostItem> lostItems = lostItemRepo.findAll(orders, pageRequest);
+    return lostItems.stream()
+        .map(LostItemPageItem::new)
+        .collect(Collectors.toList());
   }
 
   @Override

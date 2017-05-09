@@ -2,6 +2,7 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.ItemApplication;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.LostItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
@@ -58,7 +59,8 @@ public class LostItemServiceImplTestForLoadPage {
     LostItem lostItem = new LostItem();
     when(lostItemRepo.findAll(eq(createTimeSort), eq(pageRequest)))
         .thenReturn(Collections.singletonList(lostItem));
-    List<LostItem> lostItems = lostItemService.loadPage(page, listSize, orderByArg);
-    assertThat(lostItems.get(0), is(lostItem));
+    List<LostItemPageItem> lostItemPageItems = lostItemService.loadPage(page, listSize, orderByArg);
+    LostItemPageItem lostItemPageItem = new LostItemPageItem();
+    assertThat(lostItemPageItems.get(0), is(lostItemPageItem));
   }
 }
