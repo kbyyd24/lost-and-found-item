@@ -30,6 +30,42 @@ public class LostItem {
 
   public LostItem() {}
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    LostItem lostItem = (LostItem) o;
+
+    if (getId() != lostItem.getId()) return false;
+    if (getCreateTime() != lostItem.getCreateTime()) return false;
+    if (getBeginTime() != lostItem.getBeginTime()) return false;
+    if (getEndTime() != lostItem.getEndTime()) return false;
+    if (getTitle() != null ? !getTitle().equals(lostItem.getTitle()) : lostItem.getTitle() != null) return false;
+    if (getOwner() != null ? !getOwner().equals(lostItem.getOwner()) : lostItem.getOwner() != null) return false;
+    if (getItemName() != null ? !getItemName().equals(lostItem.getItemName()) : lostItem.getItemName() != null)
+      return false;
+    if (getDescription() != null ? !getDescription().equals(lostItem.getDescription()) : lostItem.getDescription() != null)
+      return false;
+    if (getState() != null ? !getState().equals(lostItem.getState()) : lostItem.getState() != null) return false;
+    return getPictures() != null ? getPictures().equals(lostItem.getPictures()) : lostItem.getPictures() == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = (int) (getId() ^ (getId() >>> 32));
+    result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
+    result = 31 * result + (getOwner() != null ? getOwner().hashCode() : 0);
+    result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
+    result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
+    result = 31 * result + (int) (getBeginTime() ^ (getBeginTime() >>> 32));
+    result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
+    result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+    result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
+    return result;
+  }
+
   public long getId() {
     return id;
   }
