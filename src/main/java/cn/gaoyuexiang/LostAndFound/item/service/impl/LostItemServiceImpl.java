@@ -9,9 +9,13 @@ import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LostItemServiceImpl implements LostItemService {
@@ -19,6 +23,7 @@ public class LostItemServiceImpl implements LostItemService {
   private final LostItemRepo lostItemRepo;
   private final IdCreateService idCreateService;
   private final TimeService timeService;
+  private Map<ItemSort, String> sortPropMap;
 
   @Autowired
   public LostItemServiceImpl(LostItemRepo lostItemRepo,
@@ -27,6 +32,10 @@ public class LostItemServiceImpl implements LostItemService {
     this.lostItemRepo = lostItemRepo;
     this.idCreateService = idCreateService;
     this.timeService = timeService;
+    sortPropMap = new HashMap<>();
+    sortPropMap.put(ItemSort.CREATE_TIME, "create_time");
+    sortPropMap.put(ItemSort.END_TIME, "end_time");
+    sortPropMap.put(ItemSort.BEGIN_TIME, "begin_time");
   }
 
   @Override
@@ -74,7 +83,9 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public List<LostItem> loadPage(int page, int listSize, ItemSort sort) {
-    return null;
+    PageRequest pageRequest = new PageRequest(page, listSize);
+    Sort orders = new Sort(Sort.Direction.DESC, this.sortPropMap.get(sort));
+    return lostItemRepo.findAll(orders, pageRequest);
   }
 
   @Override
