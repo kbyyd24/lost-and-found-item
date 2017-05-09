@@ -1,5 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
@@ -72,7 +73,7 @@ public class LostItemServiceImpl implements LostItemService {
   }
 
   @Override
-  public List<LostItem> loadPage(int page, int listSize, String sort) {
+  public List<LostItem> loadPage(int page, int listSize, ItemSort sort) {
     return null;
   }
 
