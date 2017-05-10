@@ -8,14 +8,19 @@ import org.springframework.stereotype.Service;
 public class RandomIncreasedIdCreateService implements IdCreateService {
 
   private long increaseStep;
+  private long initialBase;
 
   public RandomIncreasedIdCreateService(
-      @Value("#{systemProperties['lost-and-found.id.increase.step'] ?: 4}") long increaseStep) {
+      @Value("${lost-and-found.id.increase-step}") long increaseStep,
+      @Value("${lost-and-found.id.initial-base}") long initialBase) {
     this.increaseStep = increaseStep;
+    this.initialBase = initialBase;
   }
 
   @Override
   public long create(long base) {
-    return base + Double.doubleToLongBits(Math.random() * increaseStep);
+    return base < initialBase ?
+        initialBase :
+        base + Double.doubleToLongBits(Math.random() * increaseStep);
   }
 }

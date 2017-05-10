@@ -1,0 +1,4 @@
+lost-and-found:
+  id:
+    increase-step: 4
+    inintial-base: 1000
