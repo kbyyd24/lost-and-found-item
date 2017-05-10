@@ -22,6 +22,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ItemApplication.class)
@@ -54,10 +55,9 @@ public class LostItemServiceImplTestForLoadPage {
   private void check(String orderBy, ItemSort orderByArg) {
     int page = 1;
     int listSize = 8;
-    PageRequest pageRequest = new PageRequest(page, listSize);
-    Sort createTimeSort = new Sort(Sort.Direction.DESC, orderBy);
+    PageRequest pageRequest = new PageRequest(page, listSize, DESC, orderBy);
     LostItem lostItem = new LostItem();
-    when(lostItemRepo.findAll(eq(createTimeSort), eq(pageRequest)))
+    when(lostItemRepo.findAll(eq(pageRequest)))
         .thenReturn(Collections.singletonList(lostItem));
     List<LostItemPageItem> lostItemPageItems = lostItemService.loadPage(page, listSize, orderByArg);
     LostItemPageItem lostItemPageItem = new LostItemPageItem();

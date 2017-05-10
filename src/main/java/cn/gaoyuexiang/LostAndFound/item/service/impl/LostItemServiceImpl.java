@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 @Service
 public class LostItemServiceImpl implements LostItemService {
 
@@ -85,9 +87,9 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public List<LostItemPageItem> loadPage(int page, int listSize, ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, listSize);
-    Sort orders = new Sort(Sort.Direction.DESC, this.sortPropMap.get(sort));
-    List<LostItem> lostItems = lostItemRepo.findAll(orders, pageRequest);
+    String columnName = this.sortPropMap.get(sort);
+    PageRequest pageRequest = new PageRequest(page, listSize, DESC, columnName);
+    List<LostItem> lostItems = lostItemRepo.findAll(pageRequest);
     return lostItems.stream()
         .map(LostItemPageItem::new)
         .collect(Collectors.toList());
