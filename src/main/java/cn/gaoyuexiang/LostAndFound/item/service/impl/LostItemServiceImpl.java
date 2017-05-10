@@ -95,7 +95,7 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public LostItem loadOne(long itemId) {
-    return null;
+    return lostItemRepo.findById(itemId);
   }
 
   @Override
