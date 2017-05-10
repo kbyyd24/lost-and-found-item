@@ -1,6 +1,8 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
+import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
@@ -8,6 +10,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.LostItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.ItemState.*;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -27,15 +31,18 @@ public class LostItemServiceImpl implements LostItemService {
   private final LostItemRepo lostItemRepo;
   private final IdCreateService idCreateService;
   private final TimeService timeService;
+  private ReturnItemService returnItemService;
   private Map<ItemSort, String> sortPropMap;
 
   @Autowired
   public LostItemServiceImpl(LostItemRepo lostItemRepo,
                              IdCreateService idCreateService,
-                             TimeService timeService) {
+                             TimeService timeService,
+                             ReturnItemService returnItemService) {
     this.lostItemRepo = lostItemRepo;
     this.idCreateService = idCreateService;
     this.timeService = timeService;
+    this.returnItemService = returnItemService;
     sortPropMap = new HashMap<>();
     sortPropMap.put(ItemSort.CREATE_TIME, "create_time");
     sortPropMap.put(ItemSort.END_TIME, "end_time");
@@ -102,6 +109,24 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public LostItem close(long itemId) {
-    return null;
+    LostItem lostItem = lostItemRepo.findById(itemId);
+    if (closeCheck(itemId, lostItem)) {
+      return null;
+    }
+    lostItem.setState(CLOSED.getValue());
+    return lostItemRepo.save(lostItem);
+  }
+
+  private boolean closeCheck(long itemId, LostItem lostItem) {
+    if (lostItem == null) {
+      return true;
+    }
+    if (lostItem.getState().equals(CLOSED.getValue())) {
+      throw new CloseItemException("item closed");
+    }
+    if (returnItemService.hasUnreadItem(itemId)) {
+      throw new CloseItemException("has unread item");
+    }
+    return false;
   }
 }
