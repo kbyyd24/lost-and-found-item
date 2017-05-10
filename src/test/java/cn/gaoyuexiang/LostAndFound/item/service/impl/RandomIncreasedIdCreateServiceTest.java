@@ -21,7 +21,7 @@ public class RandomIncreasedIdCreateServiceTest {
   @Autowired
   private IdCreateService idCreateService;
 
-  @Value("${lost-and-found.id.initial-base}")
+  @Value("${lost-and-found.id.initialBase}")
   private long initialBase;
 
   @Test

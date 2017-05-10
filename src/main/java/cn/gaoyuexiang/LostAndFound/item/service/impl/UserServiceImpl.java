@@ -1,8 +1,10 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
+import cn.gaoyuexiang.LostAndFound.item.config.UserServiceProperties;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.*;
@@ -20,15 +22,20 @@ public class UserServiceImpl implements UserService {
   private RestTemplate restTemplate;
   private Map<HttpStatus, UserState> stateMap;
 
-  @Value("${lost-and-found.user.host}")
   private String host;
-  @Value("${lost-and-found.user.port}")
   private String port;
-  @Value("${lost-and-found.user.checkStateURI}")
   private String checkStateURI;
 
-  public UserServiceImpl() {
+  @Autowired
+  public UserServiceImpl(UserServiceProperties properties) {
+    this.host = properties.getHost();
+    this.port = properties.getPort();
+    this.checkStateURI = properties.getCheckStateURI();
     this.restTemplate = new RestTemplate();
+    initStateMap();
+  }
+
+  private void initStateMap() {
     this.stateMap = new HashMap<>(4);
     this.stateMap.put(HttpStatus.OK, UserState.ONLINE);
     this.stateMap.put(HttpStatus.UNAUTHORIZED, UserState.UNAUTHORIZED);

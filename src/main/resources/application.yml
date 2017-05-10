@@ -1,7 +1,7 @@
 lost-and-found:
   id:
-    increase-step: 4
-    inintial-base: 1000
+    increaseStep: 4
+    inintialBase: 1000
   user:
     host: localhost
     port: 4000
