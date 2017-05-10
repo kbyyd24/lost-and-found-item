@@ -1,7 +1,5 @@
 package cn.gaoyuexiang.LostAndFound.item.exception;
 
-import javax.ws.rs.core.Response;
-
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 public class MissPropertyException extends LostAndFoundException{
