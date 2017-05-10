@@ -89,7 +89,7 @@ public class LostItemServiceImpl implements LostItemService {
   public List<LostItemPageItem> loadPage(int page, int listSize, ItemSort sort) {
     String columnName = this.sortPropMap.get(sort);
     PageRequest pageRequest = new PageRequest(page, listSize, DESC, columnName);
-    List<LostItem> lostItems = lostItemRepo.findAll(pageRequest);
+    List<LostItem> lostItems = lostItemRepo.findAll(pageRequest).getContent();
     return lostItems.stream()
         .map(LostItemPageItem::new)
         .collect(Collectors.toList());

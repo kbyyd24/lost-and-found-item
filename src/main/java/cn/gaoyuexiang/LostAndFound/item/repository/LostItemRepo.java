@@ -4,15 +4,13 @@ import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface LostItemRepo extends CrudRepository<LostItem, Long> {
-
-  @Query("select lostItem from LostItem lostItem")
-  List<LostItem> findAll(Pageable pageable);
+public interface LostItemRepo extends PagingAndSortingRepository<LostItem, Long> {
 
   LostItem findById(long id);
 
