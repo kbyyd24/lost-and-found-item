@@ -2,3 +2,7 @@ lost-and-found:
   id:
     initial-base: 2333
     increase-step: 8
+  user:
+    host: localhost
+    port: 4000
+    checkStateURI: /user/login/username
