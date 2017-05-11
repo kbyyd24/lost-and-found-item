@@ -138,7 +138,7 @@ public class LostItemServiceImpl implements LostItemService {
       return null;
     }
     if (!existItem.getOwner().equals(updateUser)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("user is not owner of item");
     }
     updateExistItem(updater, existItem);
     return lostItemRepo.save(existItem);
@@ -164,10 +164,6 @@ public class LostItemServiceImpl implements LostItemService {
       existItem.setPictures(updater.getPictures());
     }
   }
-
-//  private boolean needUpdate(long newProp, long oldProp) {
-//    return newProp != 0 && newProp != oldProp;
-//  }
 
   private <T> boolean needUpdate(T newProp, T oldProp) {
     return newProp != null && !newProp.equals(0L) && !newProp.equals(oldProp);
