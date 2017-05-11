@@ -49,7 +49,7 @@ public class LostItemResource {
 
   @GET
   @Produces(APPLICATION_JSON)
-  public Response loadListItemList(@QueryParam("page") @DefaultValue("1") int page,
+  public Response loadLostItemList(@QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("listSize") @DefaultValue("8") int listSize,
                                    @QueryParam("sort") @DefaultValue("create_time") String sort) {
     List<LostItemPageItem> lostItemPageItems = lostItemService.loadPage(page, listSize, sortPropMap.get(sort));
