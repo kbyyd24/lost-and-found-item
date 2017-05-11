@@ -102,4 +102,20 @@ public class LostItemResource {
     return responseBuilder.build(OK, updatedItem);
   }
 
+  @DELETE
+  @Path("{itemId}")
+  public Response closeItem(@PathParam("itemId") long id,
+                            @HeaderParam("username") String username,
+                            @HeaderParam("user-token") String userToken) {
+    UserState userState = userService.checkState(username, userToken);
+    if (userState != UserState.ONLINE) {
+      return responseBuilder.build(UNAUTHORIZED, new Message(userState.name()));
+    }
+    LostItem closedItem = lostItemService.close(id);
+    if (closedItem == null) {
+      return responseBuilder.build(NOT_FOUND, new Message(LOST_ITEM_NOT_EXIST.getReason()));
+    }
+    return responseBuilder.build(OK, closedItem);
+  }
+
 }
