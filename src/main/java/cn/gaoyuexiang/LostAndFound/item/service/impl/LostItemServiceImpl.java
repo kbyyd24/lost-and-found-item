@@ -4,6 +4,7 @@ import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
@@ -129,4 +130,47 @@ public class LostItemServiceImpl implements LostItemService {
     }
     return false;
   }
+
+  @Override
+  public LostItem update(LostItemCreator updater, long itemId, String updateUser) {
+    LostItem existItem = lostItemRepo.findById(itemId);
+    if (existItem == null) {
+      return null;
+    }
+    if (!existItem.getOwner().equals(updateUser)) {
+      throw new UnauthorizedException();
+    }
+    updateExistItem(updater, existItem);
+    return lostItemRepo.save(existItem);
+  }
+
+  private void updateExistItem(LostItemCreator updater, LostItem existItem) {
+    if (needUpdate(updater.getTitle(), existItem.getTitle())) {
+      existItem.setTitle(updater.getTitle());
+    }
+    if (needUpdate(updater.getItemName(), existItem.getItemName())) {
+      existItem.setItemName(updater.getItemName());
+    }
+    if (needUpdate(updater.getBeginTime(), existItem.getBeginTime())) {
+      existItem.setBeginTime(updater.getBeginTime());
+    }
+    if (needUpdate(updater.getEndTime(), existItem.getEndTime())) {
+      existItem.setEndTime(updater.getEndTime());
+    }
+    if (needUpdate(updater.getDescription(), existItem.getDescription())) {
+      existItem.setDescription(updater.getDescription());
+    }
+    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
+      existItem.setPictures(updater.getPictures());
+    }
+  }
+
+//  private boolean needUpdate(long newProp, long oldProp) {
+//    return newProp != 0 && newProp != oldProp;
+//  }
+
+  private <T> boolean needUpdate(T newProp, T oldProp) {
+    return newProp != null && !newProp.equals(0L) && !newProp.equals(oldProp);
+  }
+
 }

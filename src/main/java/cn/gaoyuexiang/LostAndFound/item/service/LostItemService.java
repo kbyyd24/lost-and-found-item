@@ -17,4 +17,6 @@ public interface LostItemService {
 
   LostItem close(long itemId);
 
+  LostItem update(LostItemCreator updater, long itemId, String updateUser);
+
 }
