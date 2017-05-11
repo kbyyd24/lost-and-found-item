@@ -28,6 +28,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 @Component
 @Path("/item/lost")
+@Produces(APPLICATION_JSON)
 public class LostItemResource {
 
   private LostItemService lostItemService;
@@ -48,7 +49,6 @@ public class LostItemResource {
   }
 
   @GET
-  @Produces(APPLICATION_JSON)
   public Response loadLostItemList(@QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("listSize") @DefaultValue("8") int listSize,
                                    @QueryParam("sort") @DefaultValue("create_time") String sort) {
@@ -63,7 +63,6 @@ public class LostItemResource {
 
   @POST
   @Consumes(APPLICATION_JSON)
-  @Produces(APPLICATION_JSON)
   public Response createLostItem(@HeaderParam("username") String username,
                                  @HeaderParam("user-token") String token,
                                  LostItemCreator creator) {
@@ -77,7 +76,6 @@ public class LostItemResource {
 
   @GET
   @Path("{itemId}")
-  @Produces(APPLICATION_JSON)
   public Response loadOneLostItem(@PathParam("itemId") long id) {
     LostItem lostItem = lostItemService.loadOne(id);
     return lostItem == null ?
