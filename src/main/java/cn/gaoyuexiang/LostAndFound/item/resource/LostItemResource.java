@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cn.gaoyuexiang.LostAndFound.item.enums.ItemSort.*;
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NOT_EXIST;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -72,6 +73,17 @@ public class LostItemResource {
     }
     LostItem lostItem = lostItemService.create(creator, username);
     return responseBuilder.build(OK, lostItem);
+  }
+
+  @GET
+  @Path("{itemId}")
+  @Produces(APPLICATION_JSON)
+  public Response loadOneLostItem(@PathParam("itemId") long id) {
+    LostItem lostItem = lostItemService.loadOne(id);
+    return lostItem == null ?
+        responseBuilder.build(NOT_FOUND,
+            new Message(LOST_ITEM_NOT_EXIST.getReason())) :
+        responseBuilder.build(OK, lostItem);
   }
 
 }
