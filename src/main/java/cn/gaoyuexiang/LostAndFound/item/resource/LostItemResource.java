@@ -84,4 +84,22 @@ public class LostItemResource {
         responseBuilder.build(OK, lostItem);
   }
 
+  @PUT
+  @Path("{itemId}")
+  @Consumes(APPLICATION_JSON)
+  public Response updateLostItem(@PathParam("itemId") long id,
+                                 @HeaderParam("username") String username,
+                                 @HeaderParam("user-token") String userToken,
+                                 LostItemCreator updater) {
+    UserState userState = userService.checkState(username, userToken);
+    if (userState != UserState.ONLINE) {
+      return responseBuilder.build(UNAUTHORIZED, new Message("user offline"));
+    }
+    LostItem updatedItem = lostItemService.update(updater, id, username);
+    if (updatedItem == null) {
+      return responseBuilder.build(NOT_FOUND, new Message(LOST_ITEM_NOT_EXIST.getReason()));
+    }
+    return responseBuilder.build(OK, updatedItem);
+  }
+
 }
