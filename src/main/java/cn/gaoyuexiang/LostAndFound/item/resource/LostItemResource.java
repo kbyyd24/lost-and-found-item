@@ -68,7 +68,7 @@ public class LostItemResource {
                                  LostItemCreator creator) {
     UserState userState = userService.checkState(username, token);
     if (userState != UserState.ONLINE) {
-      return responseBuilder.build(UNAUTHORIZED, new Message(""));
+      return responseBuilder.build(UNAUTHORIZED, new Message(userState.name()));
     }
     LostItem lostItem = lostItemService.create(creator, username);
     return responseBuilder.build(OK, lostItem);

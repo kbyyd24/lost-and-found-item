@@ -20,7 +20,7 @@ public class MissPropertyMapper implements ExceptionMapper<MissPropertyException
   public Response toResponse(MissPropertyException exception) {
     return Response
         .status(BAD_REQUEST)
-        .entity(new Message())
+        .entity(new Message("miss some property"))
         .type(APPLICATION_JSON)
         .build();
   }
