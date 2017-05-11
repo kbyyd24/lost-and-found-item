@@ -112,13 +112,6 @@ protocols: HTTPS
             body:
               application/json:
                 type: LostItemDetail
-          400:
-            description: miss property in request body
-            body:
-              application/json:
-                type: Message
-                example:
-                  msg: miss some message
           401:
             description: username and token not match, or user is offline, or user is not owner of the item
             body:
@@ -454,13 +447,6 @@ protocols: HTTPS
             body:
               application/json:
                 type: FoundItemDetail
-          400:
-            description: miss property in request body
-            body:
-              application/json:
-                type: Message
-                example:
-                  msg: miss some message
           401:
             description: username and token not match or user is offline or user is not owner of the item
             body:
