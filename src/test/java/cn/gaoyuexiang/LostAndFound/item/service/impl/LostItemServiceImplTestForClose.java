@@ -67,7 +67,6 @@ public class LostItemServiceImplTestForClose {
   @Test(expected = CloseItemException.class)
   public void should_throw_CloseItemException_when_lost_item_has_unread_return_item() throws Exception {
     long lostItemId = 3L;
-    ReturnItem returnItem = new ReturnItem();
     LostItem lostItem = new LostItem();
     lostItem.setState(ENABLE.getValue());
     when(lostItemRepo.findById(lostItemId)).thenReturn(lostItem);
