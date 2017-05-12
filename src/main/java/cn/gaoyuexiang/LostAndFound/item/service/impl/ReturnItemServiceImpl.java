@@ -64,7 +64,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     checkCompletion(creator);
     ReturnItem existItem = returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
     if (existItem == null) {
-      existItem = buildNewItem(username, creator);
+      existItem = buildNewItem(username, lostItemId, creator);
     } else {
       updateItem(creator, existItem);
     }
@@ -76,7 +76,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     existItem.setContact(creator.getContact());
   }
 
-  private ReturnItem buildNewItem(String username, ReturnItemCreator creator) {
+  private ReturnItem buildNewItem(String username, long lostItemId, ReturnItemCreator creator) {
     ReturnItem existItem;
     long latestId = returnItemRepo.findLatestId();
     existItem = new ReturnItem();
@@ -86,6 +86,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     existItem.setReason(creator.getReason());
     existItem.setContact(creator.getContact());
     existItem.setState(ItemState.UNREAD.getValue());
+    existItem.setLostItemId(lostItemId);
     return existItem;
   }
 
