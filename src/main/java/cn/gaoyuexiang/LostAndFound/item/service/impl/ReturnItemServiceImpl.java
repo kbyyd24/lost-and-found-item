@@ -3,6 +3,7 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
@@ -65,6 +66,8 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     ReturnItem existItem = returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
     if (existItem == null) {
       existItem = buildNewItem(username, lostItemId, creator);
+    } else if (existItem.getState().equals(ItemState.CLOSED.getValue())) {
+      throw new UpdateItemException("item closed");
     } else {
       updateItem(creator, existItem);
     }

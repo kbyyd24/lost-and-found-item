@@ -1,6 +1,8 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.ReturnItemRepo;
@@ -66,6 +68,7 @@ public class ReturnItemServiceImplTestForCreate {
   @Test
   public void should_update_returnItem_when_item_exist() throws Exception {
     ReturnItem existItem = new ReturnItem();
+    existItem.setState(ItemState.UNREAD.getValue());
     when(returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId))
         .thenReturn(existItem);
     when(returnItemRepo.save(existItem)).thenReturn(existItem);
@@ -76,6 +79,15 @@ public class ReturnItemServiceImplTestForCreate {
   @Test(expected = MissPropertyException.class)
   public void should_throw_MissPropertyException_when_creator_miss_some_property() throws Exception {
     creator = new ReturnItemCreator();
+    returnItemService.create(username, lostItemId, creator);
+  }
+
+  @Test(expected = UpdateItemException.class)
+  public void should_throw_UpdateItemException_when_item_state_is_closed() throws Exception {
+    ReturnItem closedItem = new ReturnItem();
+    closedItem.setState(ItemState.CLOSED.getValue());
+    when(returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId))
+        .thenReturn(closedItem);
     returnItemService.create(username, lostItemId, creator);
   }
 }
