@@ -134,6 +134,11 @@ public class LostItemServiceImpl implements LostItemService {
     return lostItemRepo.save(existItem);
   }
 
+  @Override
+  public boolean isBelong(long itemId, String username) {
+    return false;
+  }
+
   private void updateExistItem(LostItemCreator updater, LostItem existItem) {
     if (needUpdate(updater.getTitle(), existItem.getTitle())) {
       existItem.setTitle(updater.getTitle());
