@@ -44,7 +44,7 @@ public class ReturnItemResource {
                              @QueryParam("page") @DefaultValue("1") int page,
                              @QueryParam("listSize") @DefaultValue("8") int listSize,
                              @QueryParam("sort") @DefaultValue("create_time") String sort) {
-    checkAuth(lostItemId, username, userToken);
+    checkGetAuth(lostItemId, username, userToken);
     ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
     return returnItemService
         .getReturnItemPageItems(lostItemId, page, listSize, itemSort);
@@ -56,7 +56,7 @@ public class ReturnItemResource {
                                 @PathParam("returnItemOwner") String returnItemOwner,
                                 @HeaderParam("username") String requestUser,
                                 @HeaderParam("user-token") String userToken) {
-    checkAuth(lostItemId, returnItemOwner, requestUser, userToken);
+    checkGetAuth(lostItemId, returnItemOwner, requestUser, userToken);
     ReturnItem returnItem = returnItemService.getReturnItem(returnItemOwner, lostItemId);
     if (returnItem == null) {
       throw new NotFoundException(RETURN_ITEM_NOT_FOUND.getReason());
@@ -90,14 +90,14 @@ public class ReturnItemResource {
     }
   }
 
-  private void checkAuth(long lostItemId, String username, String userToken) {
-    this.checkAuth(lostItemId, null, username, userToken);
+  private void checkGetAuth(long lostItemId, String username, String userToken) {
+    this.checkGetAuth(lostItemId, null, username, userToken);
   }
 
-  private void checkAuth(long lostItemId,
-                         String returnItemOwner,
-                         String requestUser,
-                         String userToken) {
+  private void checkGetAuth(long lostItemId,
+                            String returnItemOwner,
+                            String requestUser,
+                            String userToken) {
     UserState userState = userService.checkState(requestUser, userToken);
     if (userState != UserState.ONLINE) {
       throw new UnauthorizedException(userState.name());
