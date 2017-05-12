@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -21,15 +19,10 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ReturnItemServiceImpl implements ReturnItemService {
 
   private ReturnItemRepo returnItemRepo;
-  private Map<ItemSort, String> sortMap;
 
   @Autowired
   public ReturnItemServiceImpl(ReturnItemRepo returnItemRepo) {
     this.returnItemRepo = returnItemRepo;
-    this.sortMap = new HashMap<>(4);
-    sortMap.put(ItemSort.CREATE_TIME, "create_time");
-    sortMap.put(ItemSort.BEGIN_TIME, "begin_time");
-    sortMap.put(ItemSort.END_TIME, "end_time");
   }
 
   @Override
@@ -44,7 +37,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
                                                          int page,
                                                          int listSize,
                                                          ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, listSize, DESC, sortMap.get(sort));
+    PageRequest pageRequest = new PageRequest(page, listSize, DESC, sort.getColumnName());
     List<ReturnItem> returnItems = returnItemRepo.findAllByLostItemId(itemId, pageRequest);
     return returnItems.stream()
         .map(ReturnItemPageItem::new)

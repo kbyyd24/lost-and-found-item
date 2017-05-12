@@ -1,7 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
-import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
@@ -15,15 +14,12 @@ import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static cn.gaoyuexiang.LostAndFound.item.enums.ItemState.*;
+import static cn.gaoyuexiang.LostAndFound.item.enums.ItemState.CLOSED;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -33,7 +29,6 @@ public class LostItemServiceImpl implements LostItemService {
   private final IdCreateService idCreateService;
   private final TimeService timeService;
   private ReturnItemService returnItemService;
-  private Map<ItemSort, String> sortPropMap;
 
   @Autowired
   public LostItemServiceImpl(LostItemRepo lostItemRepo,
@@ -44,10 +39,6 @@ public class LostItemServiceImpl implements LostItemService {
     this.idCreateService = idCreateService;
     this.timeService = timeService;
     this.returnItemService = returnItemService;
-    sortPropMap = new HashMap<>();
-    sortPropMap.put(ItemSort.CREATE_TIME, "create_time");
-    sortPropMap.put(ItemSort.END_TIME, "end_time");
-    sortPropMap.put(ItemSort.BEGIN_TIME, "begin_time");
   }
 
   @Override
@@ -95,8 +86,7 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public List<LostItemPageItem> loadPage(int page, int listSize, ItemSort sort) {
-    String columnName = this.sortPropMap.get(sort);
-    PageRequest pageRequest = new PageRequest(page, listSize, DESC, columnName);
+    PageRequest pageRequest = new PageRequest(page, listSize, DESC, sort.getColumnName());
     List<LostItem> lostItems = lostItemRepo.findAll(pageRequest).getContent();
     return lostItems.stream()
         .map(LostItemPageItem::new)
