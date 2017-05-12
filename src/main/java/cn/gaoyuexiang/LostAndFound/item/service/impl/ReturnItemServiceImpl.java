@@ -1,19 +1,18 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.ReturnItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -22,7 +21,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ReturnItemServiceImpl implements ReturnItemService {
 
   private ReturnItemRepo returnItemRepo;
-private Map<ItemSort, String> sortMap;
+  private Map<ItemSort, String> sortMap;
 
   @Autowired
   public ReturnItemServiceImpl(ReturnItemRepo returnItemRepo) {
@@ -35,7 +34,9 @@ private Map<ItemSort, String> sortMap;
 
   @Override
   public boolean hasUnreadItem(long lostItemId) {
-    return false;
+    String state = ItemState.UNREAD.getValue();
+    ReturnItem returnItem = returnItemRepo.findByLostItemIdAndState(lostItemId, state);
+    return returnItem != null;
   }
 
   @Override

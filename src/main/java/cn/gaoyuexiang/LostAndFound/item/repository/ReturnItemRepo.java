@@ -17,4 +17,5 @@ public interface ReturnItemRepo extends PagingAndSortingRepository<ReturnItem, L
 
   ReturnItem findByReturnUserAndLostItemId(String returnUser, long lostItemId);
 
+  ReturnItem findByLostItemIdAndState(long lostItemId, String state);
 }
