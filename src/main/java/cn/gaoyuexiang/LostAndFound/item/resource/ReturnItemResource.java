@@ -3,6 +3,7 @@ package cn.gaoyuexiang.LostAndFound.item.resource;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
+import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
@@ -65,29 +66,33 @@ public class ReturnItemResource {
 
   @Path("{returnItemOwner}")
   @GET
-  public Response getReturnItem(@PathParam("itemId") long lostItemId,
+  public ReturnItem getReturnItem(@PathParam("itemId") long lostItemId,
                                 @PathParam("returnItemOwner") String returnItemOwner,
                                 @HeaderParam("username") String requestUser,
                                 @HeaderParam("user-token") String userToken) {
     UserState userState = userService.checkState(requestUser, userToken);
+    checkAuth(lostItemId, returnItemOwner, requestUser, userState);
+    ReturnItem returnItem = returnItemService.getReturnItem(returnItemOwner, lostItemId);
+    if (returnItem == null) {
+      throw new NotFoundException(RETURN_ITEM_NOT_FOUND.getReason());
+    }
+    return returnItem;
+  }
+
+  private void checkAuth(long lostItemId,
+                         String returnItemOwner,
+                         String requestUser,
+                         UserState userState) {
     if (userState != UserState.ONLINE) {
-      return responseBuilder.build(UNAUTHORIZED, new Message(userState.name()));
+      throw new UnauthorizedException(userState.name());
     }
-    if (requestUser.equals(returnItemOwner)) {
-      ReturnItem returnItem = returnItemService.getReturnItem(returnItemOwner, lostItemId);
-      if (returnItem == null) {
-        return responseBuilder.build(NOT_FOUND, new Message(RETURN_ITEM_NOT_FOUND.getReason()));
-      }
-      return responseBuilder.build(OK, returnItem);
+    if (!hasPermit(requestUser, returnItemOwner, lostItemId)) {
+      throw new UnauthorizedException("not owner");
     }
-    if (lostItemService.isBelong(lostItemId, requestUser)) {
-      ReturnItem returnItem = returnItemService.getReturnItem(returnItemOwner, lostItemId);
-      if (returnItem == null) {
-        return responseBuilder.build(NOT_FOUND, new Message(RETURN_ITEM_NOT_FOUND.getReason()));
-      }
-      return responseBuilder.build(OK, returnItem);
-    }
-    return responseBuilder.build(UNAUTHORIZED, new Message("not owner"));
+  }
+
+  private boolean hasPermit(String requestUser, String resourceOwner, long superResourceId) {
+    return requestUser.equals(resourceOwner) || lostItemService.isBelong(superResourceId, requestUser);
   }
 
 }
