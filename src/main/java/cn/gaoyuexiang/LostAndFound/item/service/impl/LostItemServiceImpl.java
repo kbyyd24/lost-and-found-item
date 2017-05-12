@@ -1,6 +1,7 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
@@ -16,10 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.gaoyuexiang.LostAndFound.item.enums.ItemState.CLOSED;
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NOT_EXIST;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -136,7 +139,11 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public boolean isBelong(long itemId, String username) {
-    return false;
+    LostItem lostItem = lostItemRepo.findById(itemId);
+    if (lostItem == null) {
+      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
+    }
+    return lostItem.getOwner().equals(username);
   }
 
   private void updateExistItem(LostItemCreator updater, LostItem existItem) {
