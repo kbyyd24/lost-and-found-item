@@ -14,17 +14,11 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static cn.gaoyuexiang.LostAndFound.item.enums.ItemSort.*;
 import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NOT_EXIST;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
 @Component
 @Path("/item/lost")
@@ -33,7 +27,6 @@ public class LostItemResource {
 
   private LostItemService lostItemService;
   private UserService userService;
-  private Map<String, ItemSort> sortPropMap;
   private ResponseBuilder responseBuilder;
 
   @Autowired
@@ -41,10 +34,6 @@ public class LostItemResource {
                           UserService userService) {
     this.lostItemService = lostItemService;
     this.userService = userService;
-    sortPropMap = new HashMap<>();
-    sortPropMap.put("create_time", CREATE_TIME);
-    sortPropMap.put("begin_time", BEGIN_TIME);
-    sortPropMap.put("end_time", END_TIME);
     this.responseBuilder = new ResponseBuilder();
   }
 
@@ -52,7 +41,8 @@ public class LostItemResource {
   public Response loadLostItemList(@QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("listSize") @DefaultValue("8") int listSize,
                                    @QueryParam("sort") @DefaultValue("create_time") String sort) {
-    List<LostItemPageItem> lostItemPageItems = lostItemService.loadPage(page, listSize, sortPropMap.get(sort));
+    ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
+    List<LostItemPageItem> lostItemPageItems = lostItemService.loadPage(page, listSize, itemSort);
     if (lostItemPageItems.size() > 0) {
       return responseBuilder.build(OK, lostItemPageItems);
     }
