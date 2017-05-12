@@ -24,6 +24,35 @@ public class ReturnItem {
   public ReturnItem() {
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ReturnItem that = (ReturnItem) o;
+
+    if (getId() != that.getId()) return false;
+    if (getApplyTime() != that.getApplyTime()) return false;
+    if (getLostItemId() != that.getLostItemId()) return false;
+    if (getReturnUser() != null ? !getReturnUser().equals(that.getReturnUser()) : that.getReturnUser() != null)
+      return false;
+    if (getReason() != null ? !getReason().equals(that.getReason()) : that.getReason() != null) return false;
+    if (getContact() != null ? !getContact().equals(that.getContact()) : that.getContact() != null) return false;
+    return getState() != null ? getState().equals(that.getState()) : that.getState() == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = (int) (getId() ^ (getId() >>> 32));
+    result = 31 * result + (getReturnUser() != null ? getReturnUser().hashCode() : 0);
+    result = 31 * result + (int) (getApplyTime() ^ (getApplyTime() >>> 32));
+    result = 31 * result + (getReason() != null ? getReason().hashCode() : 0);
+    result = 31 * result + (getContact() != null ? getContact().hashCode() : 0);
+    result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+    result = 31 * result + (int) (getLostItemId() ^ (getLostItemId() >>> 32));
+    return result;
+  }
+
   public long getId() {
     return id;
   }

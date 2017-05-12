@@ -7,7 +7,7 @@ public class UpdateItemException extends LostAndFoundException{
     super(message);
   }
 
-  public UpdateItemException(Response.Status status) {
-    super(status);
+  public UpdateItemException() {
+    super(Response.Status.FORBIDDEN);
   }
 }

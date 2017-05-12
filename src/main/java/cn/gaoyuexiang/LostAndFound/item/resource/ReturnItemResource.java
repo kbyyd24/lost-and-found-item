@@ -1,10 +1,9 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
-import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
-import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
@@ -14,15 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 import java.util.List;
 
 import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.RETURN_ITEM_NOT_FOUND;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 @Component
 @Path("item/lost/{itemId}/returns")
@@ -69,6 +64,27 @@ public class ReturnItemResource {
     return returnItem;
   }
 
+  @Path("{returnItemOwner}")
+  @PUT
+  @Consumes(APPLICATION_JSON)
+  public ReturnItem putCreator(@PathParam("itemId") long lostItemId,
+                               @PathParam("returnItemOwner") String returnItemOwner,
+                               @HeaderParam("username") String requestUser,
+                               @HeaderParam("user-token") String userToken,
+                               ReturnItemCreator creator) {
+    if (!requestUser.equals(returnItemOwner)) {
+      throw new UnauthorizedException("not owner");
+    }
+    UserState userState = userService.checkState(requestUser, userToken);
+    if (userState != UserState.ONLINE) {
+      throw new UnauthorizedException(userState.name());
+    }
+    if (lostItemService.isBelong(lostItemId, requestUser)) {
+      throw new UnauthorizedException("can not return self item");
+    }
+    return returnItemService.create(returnItemOwner, lostItemId, creator);
+  }
+
   private void checkAuth(long lostItemId, String username, String userToken) {
     this.checkAuth(lostItemId, null, username, userToken);
   }
@@ -81,12 +97,12 @@ public class ReturnItemResource {
     if (userState != UserState.ONLINE) {
       throw new UnauthorizedException(userState.name());
     }
-    if (!hasPermit(requestUser, returnItemOwner, lostItemId)) {
+    if (!hasGetPermit(requestUser, returnItemOwner, lostItemId)) {
       throw new UnauthorizedException("not owner");
     }
   }
 
-  private boolean hasPermit(String requestUser, String resourceOwner, long superResourceId) {
+  private boolean hasGetPermit(String requestUser, String resourceOwner, long superResourceId) {
     return requestUser.equals(resourceOwner) || lostItemService.isBelong(superResourceId, requestUser);
   }
 
