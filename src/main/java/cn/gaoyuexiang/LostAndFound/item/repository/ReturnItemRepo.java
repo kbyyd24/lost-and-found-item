@@ -3,6 +3,7 @@ package cn.gaoyuexiang.LostAndFound.item.repository;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,7 @@ public interface ReturnItemRepo extends PagingAndSortingRepository<ReturnItem, L
   ReturnItem findByReturnUserAndLostItemId(String returnUser, long lostItemId);
 
   ReturnItem findByLostItemIdAndState(long lostItemId, String state);
+
+  @Query("select returnItem.id from ReturnItem returnItem order by returnItem.applyTime desc")
+  long findLatestId();
 }

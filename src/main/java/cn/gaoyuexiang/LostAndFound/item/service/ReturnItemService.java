@@ -1,6 +1,7 @@
 package cn.gaoyuexiang.LostAndFound.item.service;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import org.springframework.stereotype.Service;
@@ -18,5 +19,7 @@ public interface ReturnItemService {
                                                   ItemSort sort);
 
   ReturnItem getReturnItem(String username, long lostItemId);
+
+  ReturnItem create(String username, long lostItemId, ReturnItemCreator creator);
 
 }

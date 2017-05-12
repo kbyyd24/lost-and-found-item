@@ -2,10 +2,14 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
+import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.ReturnItemRepo;
+import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,10 +23,16 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ReturnItemServiceImpl implements ReturnItemService {
 
   private ReturnItemRepo returnItemRepo;
+  private IdCreateService idCreateService;
+  private TimeService timeService;
 
   @Autowired
-  public ReturnItemServiceImpl(ReturnItemRepo returnItemRepo) {
+  public ReturnItemServiceImpl(ReturnItemRepo returnItemRepo,
+                               IdCreateService idCreateService,
+                               TimeService timeService) {
     this.returnItemRepo = returnItemRepo;
+    this.idCreateService = idCreateService;
+    this.timeService = timeService;
   }
 
   @Override
@@ -47,5 +57,41 @@ public class ReturnItemServiceImpl implements ReturnItemService {
   @Override
   public ReturnItem getReturnItem(String username, long lostItemId) {
     return returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
+  }
+
+  @Override
+  public ReturnItem create(String username, long lostItemId, ReturnItemCreator creator) {
+    checkCompletion(creator);
+    ReturnItem existItem = returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
+    if (existItem == null) {
+      existItem = buildNewItem(username, creator);
+    } else {
+      updateItem(creator, existItem);
+    }
+    return returnItemRepo.save(existItem);
+  }
+
+  private void updateItem(ReturnItemCreator creator, ReturnItem existItem) {
+    existItem.setReason(creator.getReason());
+    existItem.setContact(creator.getContact());
+  }
+
+  private ReturnItem buildNewItem(String username, ReturnItemCreator creator) {
+    ReturnItem existItem;
+    long latestId = returnItemRepo.findLatestId();
+    existItem = new ReturnItem();
+    existItem.setId(idCreateService.create(latestId));
+    existItem.setReturnUser(username);
+    existItem.setApplyTime(timeService.getCurrentTime());
+    existItem.setReason(creator.getReason());
+    existItem.setContact(creator.getContact());
+    existItem.setState(ItemState.UNREAD.getValue());
+    return existItem;
+  }
+
+  private void checkCompletion(ReturnItemCreator creator) {
+    if (creator == null || creator.getContact() == null || creator.getReason() == null) {
+      throw new MissPropertyException();
+    }
   }
 }
