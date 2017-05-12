@@ -1,5 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.service;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
@@ -21,5 +22,7 @@ public interface ReturnItemService {
   ReturnItem getReturnItem(String username, long lostItemId);
 
   ReturnItem create(String username, long lostItemId, ReturnItemCreator creator);
+
+  ReturnItem delete(String username, long lostItemId, ActionType actionType);
 
 }

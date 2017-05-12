@@ -1,5 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
@@ -15,8 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.NotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.RETURN_ITEM_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -27,6 +32,8 @@ public class ReturnItemServiceImpl implements ReturnItemService {
   private IdCreateService idCreateService;
   private TimeService timeService;
 
+  private Map<ActionType, ItemState> actionStateMap;
+
   @Autowired
   public ReturnItemServiceImpl(ReturnItemRepo returnItemRepo,
                                IdCreateService idCreateService,
@@ -34,6 +41,10 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     this.returnItemRepo = returnItemRepo;
     this.idCreateService = idCreateService;
     this.timeService = timeService;
+    actionStateMap = new HashMap<>(4);
+    actionStateMap.put(ActionType.CANCEL, ItemState.CANCELED);
+    actionStateMap.put(ActionType.REJECT, ItemState.REJECTED);
+    actionStateMap.put(ActionType.ACCEPT, ItemState.ACCEPTED);
   }
 
   @Override
@@ -72,6 +83,19 @@ public class ReturnItemServiceImpl implements ReturnItemService {
       updateItem(creator, existItem);
     }
     return returnItemRepo.save(existItem);
+  }
+
+  @Override
+  public ReturnItem delete(String username, long lostItemId, ActionType actionType) {
+    ReturnItem returnItem = returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
+    if (returnItem == null) {
+      throw new NotFoundException(RETURN_ITEM_NOT_FOUND.getReason());
+    }
+    if (!returnItem.getState().equals(ItemState.UNREAD.getValue())) {
+      throw new UpdateItemException("item state is " + returnItem.getState());
+    }
+    returnItem.setState(actionStateMap.get(actionType).getValue());
+    return returnItemRepo.save(returnItem);
   }
 
   private void updateItem(ReturnItemCreator creator, ReturnItem existItem) {

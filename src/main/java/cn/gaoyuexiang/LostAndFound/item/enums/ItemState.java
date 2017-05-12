@@ -5,7 +5,10 @@ public enum ItemState {
   ENABLE("enable"),
   FOUND("found"),
   DISABLE("disable"),
-  UNREAD("unread");
+  UNREAD("unread"),
+  CANCELED("canceled"),
+  REJECTED("rejected"),
+  ACCEPTED("accepted");
 
   private String value;
 
