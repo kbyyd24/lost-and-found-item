@@ -43,4 +43,9 @@ public class ReturnItemServiceImpl implements ReturnItemService {
         .map(ReturnItemPageItem::new)
         .collect(toList());
   }
+
+  @Override
+  public ReturnItem getReturnItem(String username, long lostItemId) {
+    return returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
+  }
 }
