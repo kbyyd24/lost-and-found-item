@@ -72,6 +72,12 @@ public class ReturnItemResource {
                                @HeaderParam("username") String requestUser,
                                @HeaderParam("user-token") String userToken,
                                ReturnItemCreator creator) {
+    checkPutAuth(lostItemId, returnItemOwner, requestUser, userToken);
+    return returnItemService.create(returnItemOwner, lostItemId, creator);
+  }
+
+  private void checkPutAuth(long lostItemId, String returnItemOwner,
+                            String requestUser, String userToken) {
     if (!requestUser.equals(returnItemOwner)) {
       throw new UnauthorizedException("not owner");
     }
@@ -82,7 +88,6 @@ public class ReturnItemResource {
     if (lostItemService.isBelong(lostItemId, requestUser)) {
       throw new UnauthorizedException("can not return self item");
     }
-    return returnItemService.create(returnItemOwner, lostItemId, creator);
   }
 
   private void checkAuth(long lostItemId, String username, String userToken) {
