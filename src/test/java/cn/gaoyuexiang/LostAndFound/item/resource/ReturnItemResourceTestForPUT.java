@@ -41,9 +41,6 @@ public class ReturnItemResourceTestForPUT {
   private ReturnItemService returnItemService;
 
   @MockBean
-  private LostItemService lostItemService;
-
-  @MockBean
   private AuthService authService;
 
   private ReturnItemCreator creator;

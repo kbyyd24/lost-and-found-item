@@ -27,18 +27,12 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class ReturnItemResource {
 
   private final ReturnItemService returnItemService;
-  private final LostItemService lostItemService;
-  private final UserService userService;
   private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
-                            LostItemService lostItemService,
-                            UserService userService,
                             AuthService authService) {
     this.returnItemService = returnItemService;
-    this.lostItemService = lostItemService;
-    this.userService = userService;
     this.authService = authService;
   }
 

@@ -43,9 +43,6 @@ public class ReturnItemResourceTestForGetReturnItem {
   @MockBean
   private AuthService authService;
 
-  @MockBean
-  private LostItemService lostItemService;
-
   private String lostItemOwner;
   private String returnItemOwner;
   private String token;
@@ -115,8 +112,6 @@ public class ReturnItemResourceTestForGetReturnItem {
         authService
             .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
         .willReturn(UserRole.NOT_OWNER);
-    given(lostItemService.isBelong(eq(lostItemId), eq(lostItemOwner)))
-        .willReturn(false);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));

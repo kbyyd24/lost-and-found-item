@@ -43,9 +43,6 @@ public class ReturnItemResourceTestForGetList {
   private ReturnItemService returnItemService;
 
   @MockBean
-  private LostItemService lostItemService;
-
-  @MockBean
   private AuthService authService;
 
   private String username;
