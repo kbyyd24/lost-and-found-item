@@ -10,6 +10,11 @@ import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import static cn.gaoyuexiang.LostAndFound.item.enums.ActionType.*;
 import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.NOT_OWNER;
 import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.RESOURCE_OWNER;
 import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.SUPER_RESOURCE_OWNER;
@@ -20,11 +25,22 @@ public class AuthServiceImpl implements AuthService {
   private final UserService userService;
   private final LostItemService lostItemService;
 
+  private Map<UserRole, Predicate<ActionType>> roleActionMap;
+
   @Autowired
   public AuthServiceImpl(UserService userService,
                          LostItemService lostItemService) {
     this.userService = userService;
     this.lostItemService = lostItemService;
+    this.roleActionMap = buildRoleActionMap();
+  }
+
+  private Map<UserRole, Predicate<ActionType>> buildRoleActionMap() {
+    HashMap<UserRole, Predicate<ActionType>> roleActonMap = new HashMap<>();
+    roleActonMap.put(NOT_OWNER, action -> false);
+    roleActonMap.put(SUPER_RESOURCE_OWNER, action -> action != CANCEL);
+    roleActonMap.put(RESOURCE_OWNER, action -> action == CANCEL);
+    return roleActonMap;
   }
 
   @Override
@@ -57,6 +73,6 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public boolean checkAction(UserRole role, ActionType action) {
-    return false;
+    return roleActionMap.get(role).test(action);
   }
 }
