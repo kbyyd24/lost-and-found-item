@@ -83,9 +83,8 @@ public class LostItemResource {
                                  @HeaderParam("username") String username,
                                  @HeaderParam("user-token") String userToken,
                                  LostItemCreator updater) {
-    UserRole userRole = authService.checkUserRole(id, username, userToken);
-    if (userRole == UserRole.NOT_OWNER) {
-      throw new UnauthorizedException(userRole.name());
+    if (authService.checkUserRole(id, username, userToken) == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
     return lostItemService.update(updater, id, username);
   }
