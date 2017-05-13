@@ -10,6 +10,10 @@ import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.NOT_OWNER;
+import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.RESOURCE_OWNER;
+import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.SUPER_RESOURCE_OWNER;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -26,14 +30,14 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public UserRole checkUserRole(long superResourceId, String resourceUser,
                                 String requestUser, String userToken) {
-    checkUserState(requestUser, userToken);
-    if (lostItemService.isBelong(superResourceId, requestUser)) {
-      return UserRole.SUPER_RESOURCE_OWNER;
+    UserRole userRoleWithSuperResource = this.checkUserRole(superResourceId, requestUser, userToken);
+    if (userRoleWithSuperResource == SUPER_RESOURCE_OWNER) {
+      return userRoleWithSuperResource;
+    } else {
+      return resourceUser.equals(requestUser) ?
+          RESOURCE_OWNER :
+          NOT_OWNER;
     }
-    if (resourceUser.equals(requestUser)) {
-      return UserRole.RESOURCE_OWNER;
-    }
-    return UserRole.NOT_OWNER;
   }
 
   private void checkUserState(String requestUser, String userToken) {
@@ -45,7 +49,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public UserRole checkUserRole(long itemId, String requestUser, String userToken) {
-    return null;
+    checkUserState(requestUser, userToken);
+    return lostItemService.isBelong(itemId, requestUser) ?
+        SUPER_RESOURCE_OWNER :
+        NOT_OWNER;
   }
 
   @Override
