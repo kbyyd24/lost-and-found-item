@@ -39,6 +39,9 @@ public class ReturnItemResourceTestForPUT {
 
   @MockBean
   private ReturnItemService returnItemService;
+  
+  @MockBean
+  private LostItemService lostItemService;
 
   @MockBean
   private AuthService authService;
@@ -68,6 +71,7 @@ public class ReturnItemResourceTestForPUT {
     ReturnItem returnItem = new ReturnItem();
     given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
         .willReturn(UserRole.RESOURCE_OWNER);
+    given(lostItemService.isClosed(lostItemId)).willReturn(false);
     given(returnItemService.create(eq(username), eq(lostItemId), eq(creator)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity =
@@ -100,6 +104,15 @@ public class ReturnItemResourceTestForPUT {
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+  }
+
+  @Test
+  public void should_response_403_when_lostItem_state_is_closed() throws Exception {
+    given(authService.checkUserRole(eq(lostItemId),eq(username),eq(username),eq(token)))
+        .willReturn(UserRole.RESOURCE_OWNER);
+    given(lostItemService.isClosed(eq(lostItemId))).willReturn(true);
+    ResponseEntity<Message> entity = putRequest();
+    assertThat(entity.getStatusCode(), is(HttpStatus.FORBIDDEN));
   }
 
   @Test

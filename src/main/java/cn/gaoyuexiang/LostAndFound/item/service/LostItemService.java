@@ -20,4 +20,6 @@ public interface LostItemService {
   LostItem update(LostItemCreator updater, long itemId, String updateUser);
 
   boolean isBelong(long itemId, String username);
+
+  boolean isClosed(long itemId);
 }

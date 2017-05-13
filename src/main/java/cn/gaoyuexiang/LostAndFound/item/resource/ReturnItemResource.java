@@ -4,6 +4,7 @@ import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
@@ -27,12 +28,15 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class ReturnItemResource {
 
   private final ReturnItemService returnItemService;
+  private LostItemService lostItemService;
   private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
+                            LostItemService lostItemService,
                             AuthService authService) {
     this.returnItemService = returnItemService;
+    this.lostItemService = lostItemService;
     this.authService = authService;
   }
 
@@ -79,6 +83,9 @@ public class ReturnItemResource {
     UserRole userRole = authService.checkUserRole(lostItemId, returnItemOwner, requestUser, userToken);
     if (userRole != UserRole.RESOURCE_OWNER) {
       throw new UnauthorizedException();
+    }
+    if (lostItemService.isClosed(lostItemId)) {
+      throw new UpdateItemException("lost item closed");
     }
     return returnItemService.create(returnItemOwner, lostItemId, creator);
   }

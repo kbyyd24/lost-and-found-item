@@ -1,6 +1,7 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
@@ -144,6 +145,15 @@ public class LostItemServiceImpl implements LostItemService {
       throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
     }
     return lostItem.getOwner().equals(username);
+  }
+
+  @Override
+  public boolean isClosed(long itemId) {
+    LostItem lostItem = lostItemRepo.findById(itemId);
+    if (lostItem == null) {
+      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
+    }
+    return lostItem.getState().equals(ItemState.CLOSED.getValue());
   }
 
   private void updateExistItem(LostItemCreator updater, LostItem existItem) {
