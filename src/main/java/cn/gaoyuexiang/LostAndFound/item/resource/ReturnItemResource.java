@@ -1,11 +1,13 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
+import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
@@ -27,14 +29,17 @@ public class ReturnItemResource {
   private final ReturnItemService returnItemService;
   private final LostItemService lostItemService;
   private final UserService userService;
+  private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
                             LostItemService lostItemService,
-                            UserService userService) {
+                            UserService userService,
+                            AuthService authService) {
     this.returnItemService = returnItemService;
     this.lostItemService = lostItemService;
     this.userService = userService;
+    this.authService = authService;
   }
 
   @GET
@@ -44,7 +49,10 @@ public class ReturnItemResource {
                              @QueryParam("page") @DefaultValue("1") int page,
                              @QueryParam("listSize") @DefaultValue("8") int listSize,
                              @QueryParam("sort") @DefaultValue("create_time") String sort) {
-    checkGetAuth(lostItemId, username, userToken);
+//    checkGetAuth(lostItemId, username, userToken);
+    if (authService.checkUserRole(lostItemId, username, userToken) == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(UserRole.NOT_OWNER.name());
+    }
     ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
     return returnItemService
         .getReturnItemPageItems(lostItemId, page, listSize, itemSort);

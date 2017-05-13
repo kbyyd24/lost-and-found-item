@@ -1,10 +1,13 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
+import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
+import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
@@ -35,15 +38,15 @@ public class ReturnItemResourceTestForGetList {
 
   @Autowired
   private TestRestTemplate restTemplate;
-  
+
   @MockBean
   private ReturnItemService returnItemService;
-  
+
   @MockBean
   private LostItemService lostItemService;
-  
+
   @MockBean
-  private UserService userService;
+  private AuthService authService;
 
   private String username;
   private String token;
@@ -75,8 +78,8 @@ public class ReturnItemResourceTestForGetList {
   public void should_response_200_when_user_is_online_and_has_the_item() throws Exception {
     ReturnItemPageItem pageItem = new ReturnItemPageItem();
     List<ReturnItemPageItem> pageItems = Collections.singletonList(pageItem);
-    given(userService.checkState(eq(username), eq(token))).willReturn(UserState.ONLINE);
-    given(lostItemService.isBelong(eq(lostItemId), eq(username))).willReturn(true);
+    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(token)))
+        .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(returnItemService.getReturnItemPageItems(eq(lostItemId), eq(page), eq(size), eq(sort)))
         .willReturn(pageItems);
     ResponseEntity<List> entity =
@@ -86,16 +89,17 @@ public class ReturnItemResourceTestForGetList {
 
   @Test
   public void should_response_401_when_user_is_not_online() throws Exception {
-    given(userService.checkState(eq(username), eq(token))).willReturn(UserState.OFFLINE);
+    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(token)))
+        .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
   }
 
   @Test
-  public void should_response_401_when_user_is_online_but_do_not_has_the_item() throws Exception {
-    given(userService.checkState(eq(username), eq(token))).willReturn(UserState.OFFLINE);
-    given(lostItemService.isBelong(eq(lostItemId), eq(username))).willReturn(false);
+  public void should_response_401_when_user_is_online_but_item_owner() throws Exception {
+    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(token)))
+        .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -103,8 +107,7 @@ public class ReturnItemResourceTestForGetList {
 
   @Test
   public void should_response_404_when_item_not_found() throws Exception {
-    given(userService.checkState(eq(username), eq(token))).willReturn(UserState.ONLINE);
-    given(lostItemService.isBelong(eq(lostItemId), eq(username)))
+    given(authService.checkUserRole(eq(lostItemId),eq(username),eq(token)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
