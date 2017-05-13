@@ -95,15 +95,10 @@ public class LostItemResource {
   public LostItem closeItem(@PathParam("itemId") long id,
                             @HeaderParam("username") String username,
                             @HeaderParam("user-token") String userToken) {
-    UserState userState = userService.checkState(username, userToken);
-    if (userState != UserState.ONLINE) {
-      throw new UnauthorizedException(userState.name());
+    if (authService.checkUserRole(id, username, userToken) == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
-    LostItem closedItem = lostItemService.close(id);
-    if (closedItem == null) {
-      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
-    }
-    return closedItem;
+    return lostItemService.close(id);
   }
 
 }
