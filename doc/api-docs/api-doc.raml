@@ -306,13 +306,6 @@ protocols: HTTPS
                 body:
                   application/json:
                     type: ReturnDetail
-              400:
-                description: user is item's owner, but miss action-type header
-                body:
-                  application/json:
-                    type: Message
-                    example:
-                      msg: miss header
               401:
                 description: username and token not match or user is offline or user is not owner of item or return application or user choose unauthorized action
                 body:
