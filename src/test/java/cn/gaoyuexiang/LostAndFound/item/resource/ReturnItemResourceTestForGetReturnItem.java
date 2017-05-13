@@ -1,11 +1,13 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
+import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
+import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
-import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.ws.rs.NotFoundException;
@@ -36,7 +41,7 @@ public class ReturnItemResourceTestForGetReturnItem {
   private ReturnItemService returnItemService;
 
   @MockBean
-  private UserService userService;
+  private AuthService authService;
 
   @MockBean
   private LostItemService lostItemService;
@@ -64,10 +69,10 @@ public class ReturnItemResourceTestForGetReturnItem {
   @Test
   public void should_response_200_when_user_is_lostItem_owner() throws Exception {
     ReturnItem returnItem = new ReturnItem();
-    given(userService.checkState(eq(lostItemOwner),eq(token)))
-        .willReturn(UserState.ONLINE);
-    given(lostItemService.isBelong(eq(lostItemId), eq(lostItemOwner)))
-        .willReturn(true);
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity =
@@ -82,8 +87,10 @@ public class ReturnItemResourceTestForGetReturnItem {
     httpHeaders.add(token, token);
     requestEntity = new HttpEntity<>(httpHeaders);
     ReturnItem returnItem = new ReturnItem();
-    given(userService.checkState(eq(returnItemOwner), eq(token)))
-        .willReturn(UserState.ONLINE);
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(returnItemOwner), eq(token)))
+        .willReturn(UserRole.RESOURCE_OWNER);
     given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity =
@@ -93,8 +100,10 @@ public class ReturnItemResourceTestForGetReturnItem {
 
   @Test
   public void should_response_401_when_user_not_online() throws Exception {
-    given(userService.checkState(eq(lostItemOwner), eq(token)))
-        .willReturn(UserState.OFFLINE);
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -102,8 +111,10 @@ public class ReturnItemResourceTestForGetReturnItem {
 
   @Test
   public void should_response_401_when_user_not_lostItem_owner_and_returnItem_owner() throws Exception {
-    given(userService.checkState(eq(lostItemOwner), eq(token)))
-        .willReturn(UserState.ONLINE);
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        .willReturn(UserRole.NOT_OWNER);
     given(lostItemService.isBelong(eq(lostItemId), eq(lostItemOwner)))
         .willReturn(false);
     ResponseEntity<Message> entity =
@@ -113,9 +124,9 @@ public class ReturnItemResourceTestForGetReturnItem {
 
   @Test
   public void should_response_404_when_lostItem_not_found() throws Exception {
-    given(userService.checkState(eq(lostItemOwner), eq(token)))
-        .willReturn(UserState.ONLINE);
-    given(lostItemService.isBelong(eq(lostItemId),eq(lostItemOwner)))
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
@@ -124,11 +135,11 @@ public class ReturnItemResourceTestForGetReturnItem {
 
   @Test
   public void should_response_404_when_returnItem_not_found() throws Exception {
-    given(userService.checkState(eq(lostItemOwner), eq(token)))
-        .willReturn(UserState.ONLINE);
-    given(lostItemService.isBelong(eq(lostItemId), eq(lostItemOwner)))
-        .willReturn(true);
-    given(returnItemService.getReturnItem(eq(returnItemOwner),eq(lostItemId)))
+    given(
+        authService
+            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        .willReturn(UserRole.RESOURCE_OWNER);
+    given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(null);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);

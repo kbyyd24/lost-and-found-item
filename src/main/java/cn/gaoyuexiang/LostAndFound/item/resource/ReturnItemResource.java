@@ -49,7 +49,6 @@ public class ReturnItemResource {
                              @QueryParam("page") @DefaultValue("1") int page,
                              @QueryParam("listSize") @DefaultValue("8") int listSize,
                              @QueryParam("sort") @DefaultValue("create_time") String sort) {
-//    checkGetAuth(lostItemId, username, userToken);
     if (authService.checkUserRole(lostItemId, username, userToken) == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
@@ -64,7 +63,10 @@ public class ReturnItemResource {
                                 @PathParam("returnItemOwner") String returnItemOwner,
                                 @HeaderParam("username") String requestUser,
                                 @HeaderParam("user-token") String userToken) {
-    checkGetAuth(lostItemId, returnItemOwner, requestUser, userToken);
+    UserRole userRole = authService.checkUserRole(lostItemId, returnItemOwner, requestUser, userToken);
+    if (userRole == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(userRole.name());
+    }
     ReturnItem returnItem = returnItemService.getReturnItem(returnItemOwner, lostItemId);
     if (returnItem == null) {
       throw new NotFoundException(RETURN_ITEM_NOT_FOUND.getReason());
