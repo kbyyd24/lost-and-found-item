@@ -82,43 +82,11 @@ public class ReturnItemResource {
                                @HeaderParam("username") String requestUser,
                                @HeaderParam("user-token") String userToken,
                                ReturnItemCreator creator) {
-    checkPutAuth(lostItemId, returnItemOwner, requestUser, userToken);
+    UserRole userRole = authService.checkUserRole(lostItemId, returnItemOwner, requestUser, userToken);
+    if (userRole != UserRole.RESOURCE_OWNER) {
+      throw new UnauthorizedException();
+    }
     return returnItemService.create(returnItemOwner, lostItemId, creator);
-  }
-
-  private void checkPutAuth(long lostItemId, String returnItemOwner,
-                            String requestUser, String userToken) {
-    if (!requestUser.equals(returnItemOwner)) {
-      throw new UnauthorizedException("not owner");
-    }
-    UserState userState = userService.checkState(requestUser, userToken);
-    if (userState != UserState.ONLINE) {
-      throw new UnauthorizedException(userState.name());
-    }
-    if (lostItemService.isBelong(lostItemId, requestUser)) {
-      throw new UnauthorizedException("can not return self item");
-    }
-  }
-
-  private void checkGetAuth(long lostItemId, String username, String userToken) {
-    this.checkGetAuth(lostItemId, null, username, userToken);
-  }
-
-  private void checkGetAuth(long lostItemId,
-                            String returnItemOwner,
-                            String requestUser,
-                            String userToken) {
-    UserState userState = userService.checkState(requestUser, userToken);
-    if (userState != UserState.ONLINE) {
-      throw new UnauthorizedException(userState.name());
-    }
-    if (!hasGetPermit(requestUser, returnItemOwner, lostItemId)) {
-      throw new UnauthorizedException("not owner");
-    }
-  }
-
-  private boolean hasGetPermit(String requestUser, String resourceOwner, long superResourceId) {
-    return requestUser.equals(resourceOwner) || lostItemService.isBelong(superResourceId, requestUser);
   }
 
 }
