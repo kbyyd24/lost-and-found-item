@@ -2,12 +2,14 @@ package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
+import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
+import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,15 @@ public class LostItemResource {
 
   private LostItemService lostItemService;
   private UserService userService;
+  private AuthService authService;
 
   @Autowired
   public LostItemResource(LostItemService lostItemService,
-                          UserService userService) {
+                          UserService userService,
+                          AuthService authService) {
     this.lostItemService = lostItemService;
     this.userService = userService;
+    this.authService = authService;
   }
 
   @GET
@@ -78,15 +83,11 @@ public class LostItemResource {
                                  @HeaderParam("username") String username,
                                  @HeaderParam("user-token") String userToken,
                                  LostItemCreator updater) {
-    UserState userState = userService.checkState(username, userToken);
-    if (userState != UserState.ONLINE) {
-      throw new UnauthorizedException(userState.name());
+    UserRole userRole = authService.checkUserRole(id, username, userToken);
+    if (userRole == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(userRole.name());
     }
-    LostItem updatedItem = lostItemService.update(updater, id, username);
-    if (updatedItem == null) {
-      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
-    }
-    return updatedItem;
+    return lostItemService.update(updater, id, username);
   }
 
   @DELETE
