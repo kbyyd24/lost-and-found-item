@@ -87,4 +87,16 @@ public class FoundItemResource {
     return foundItemService.update(updater, itemId, requestUser);
   }
 
+  @DELETE
+  @Path("{itemId}")
+  public FoundItem close(@PathParam("itemId") long itemId,
+                         @HeaderParam("username") String username,
+                         @HeaderParam("user-token") String userToken) {
+    UserRole userRole = authService.checkUserRole(itemId, username, userToken, foundItemService);
+    if (userRole != UserRole.SUPER_RESOURCE_OWNER) {
+      throw new UnauthorizedException(userRole.name());
+    }
+    return foundItemService.close(itemId);
+  }
+
 }
