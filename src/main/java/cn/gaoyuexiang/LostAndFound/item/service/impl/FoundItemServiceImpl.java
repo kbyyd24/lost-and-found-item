@@ -62,7 +62,34 @@ public class FoundItemServiceImpl implements FoundItemService {
 
   @Override
   public FoundItem update(FoundItemCreator updater, long itemId, String updateUser) {
-    return null;
+    FoundItem existItem = foundItemRepo.findByIdAndOwner(itemId, updateUser);
+    if (existItem == null) {
+      return null;
+    }
+    updateItem(updater, existItem);
+    return foundItemRepo.save(existItem);
+  }
+
+  private void updateItem(FoundItemCreator updater, FoundItem existItem) {
+    if (needUpdate(updater.getTitle(), existItem.getTitle())) {
+      existItem.setTitle(updater.getTitle());
+    }
+    if (needUpdate(updater.getItemName(), existItem.getItemName())) {
+      existItem.setItemName(updater.getItemName());
+    }
+    if (needUpdate(updater.getFoundTime(), existItem.getFoundTime())) {
+      existItem.setFoundTime(updater.getFoundTime());
+    }
+    if (needUpdate(updater.getDescription(), existItem.getDescription())) {
+      existItem.setDescription(updater.getDescription());
+    }
+    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
+      existItem.setPictures(updater.getPictures());
+    }
+  }
+
+  private <T> boolean needUpdate(T newProp, T oldProp) {
+    return newProp != null && !newProp.equals(0L) && !newProp.equals(oldProp);
   }
 
   @Override
