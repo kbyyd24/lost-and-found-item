@@ -4,6 +4,7 @@ import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +34,7 @@ public class FoundItemResourceTestGetList {
   private TestRestTemplate restTemplate;
 
   @MockBean
-  private FoundItemService foundItemService;
+  private FoundItemServiceImpl foundItemService;
 
   private int page;
   private int size;
