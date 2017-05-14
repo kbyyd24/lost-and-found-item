@@ -6,7 +6,8 @@ import java.util.stream.Stream;
 public enum ItemSort {
   END_TIME("end_time"),
   BEGIN_TIME("begin_time"),
-  CREATE_TIME("create_time");
+  CREATE_TIME("create_time"),
+  FOUND_TIME("found_time");
 
   private String columnName;
 
