@@ -94,7 +94,11 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
 
   @Override
   public boolean isClosed(long itemId) {
-    return false;
+    FoundItem foundItem = foundItemRepo.findById(itemId);
+    if (foundItem == null) {
+      throw new NotFoundException(FOUND_ITEM_NOT_FOUND.getReason());
+    }
+    return foundItem.getState().equals(ItemState.CLOSED.getValue());
   }
 
   private boolean isComplete(FoundItemCreator creator) {
