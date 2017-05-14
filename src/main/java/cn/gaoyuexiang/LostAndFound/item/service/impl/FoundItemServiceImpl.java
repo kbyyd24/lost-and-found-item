@@ -3,11 +3,13 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
+import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.FoundItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.FoundItemRepo;
+import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
@@ -28,13 +30,16 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
   private FoundItemRepo foundItemRepo;
   private TimeService timeService;
   private IdCreateService idCreateService;
+  private ClaimItemService claimItemService;
 
   public FoundItemServiceImpl(FoundItemRepo foundItemRepo,
                               TimeService timeService,
-                              IdCreateService idCreateService) {
+                              IdCreateService idCreateService,
+                              ClaimItemService claimItemService) {
     this.foundItemRepo = foundItemRepo;
     this.timeService = timeService;
     this.idCreateService = idCreateService;
+    this.claimItemService = claimItemService;
   }
 
   @Override
@@ -61,7 +66,11 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
 
   @Override
   public FoundItem close(long itemId) {
-    return null;
+    if (claimItemService.hasUnreadItem(itemId)) {
+      throw new CloseItemException("has unread claim item");
+    }
+    FoundItem foundItem = foundItemRepo.findById(itemId);
+    return foundItem == null ? null : foundItemRepo.save(foundItem);
   }
 
   @Override
