@@ -7,6 +7,7 @@ import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +24,12 @@ import static cn.gaoyuexiang.LostAndFound.item.enums.UserRole.SUPER_RESOURCE_OWN
 public class AuthServiceImpl implements AuthService {
 
   private final UserService userService;
-  private final LostItemService lostItemService;
 
   private Map<UserRole, Predicate<ActionType>> roleActionMap;
 
   @Autowired
-  public AuthServiceImpl(UserService userService,
-                         LostItemService lostItemService) {
+  public AuthServiceImpl(UserService userService) {
     this.userService = userService;
-    this.lostItemService = lostItemService;
     this.roleActionMap = buildRoleActionMap();
   }
 
@@ -45,8 +43,9 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public UserRole checkUserRole(long superResourceId, String resourceUser,
-                                String requestUser, String userToken) {
-    UserRole userRoleWithSuperResource = this.checkUserRole(superResourceId, requestUser, userToken);
+                                String requestUser, String userToken, BelongChecker belongChecker) {
+    UserRole userRoleWithSuperResource = this.checkUserRole(superResourceId, requestUser,
+        userToken, belongChecker);
     if (userRoleWithSuperResource == SUPER_RESOURCE_OWNER) {
       return userRoleWithSuperResource;
     } else {
@@ -64,9 +63,10 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public UserRole checkUserRole(long itemId, String requestUser, String userToken) {
+  public UserRole checkUserRole(long itemId, String requestUser, String userToken,
+                                BelongChecker belongChecker) {
     checkUserState(requestUser, userToken);
-    return lostItemService.isBelong(itemId, requestUser) ?
+    return belongChecker.isBelong(itemId, requestUser) ?
         SUPER_RESOURCE_OWNER :
         NOT_OWNER;
   }

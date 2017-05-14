@@ -8,6 +8,8 @@ import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
+import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,9 @@ public class ReturnItemResourceTestForGetReturnItem {
   @MockBean
   private AuthService authService;
 
+  @MockBean
+  private LostItemServiceImpl belongChecker;
+
   private String lostItemOwner;
   private String returnItemOwner;
   private String token;
@@ -67,8 +72,8 @@ public class ReturnItemResourceTestForGetReturnItem {
   public void should_response_200_when_user_is_lostItem_owner() throws Exception {
     ReturnItem returnItem = new ReturnItem();
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(lostItemOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(returnItem);
@@ -85,8 +90,8 @@ public class ReturnItemResourceTestForGetReturnItem {
     requestEntity = new HttpEntity<>(httpHeaders);
     ReturnItem returnItem = new ReturnItem();
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(returnItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(returnItemOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
     given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(returnItem);
@@ -98,8 +103,8 @@ public class ReturnItemResourceTestForGetReturnItem {
   @Test
   public void should_response_401_when_user_not_online() throws Exception {
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(lostItemOwner), eq(token), eq(belongChecker)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
@@ -109,8 +114,8 @@ public class ReturnItemResourceTestForGetReturnItem {
   @Test
   public void should_response_401_when_user_not_lostItem_owner_and_returnItem_owner() throws Exception {
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(lostItemOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
@@ -120,8 +125,8 @@ public class ReturnItemResourceTestForGetReturnItem {
   @Test
   public void should_response_404_when_lostItem_not_found() throws Exception {
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(lostItemOwner), eq(token), eq(belongChecker)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
@@ -131,8 +136,8 @@ public class ReturnItemResourceTestForGetReturnItem {
   @Test
   public void should_response_404_when_returnItem_not_found() throws Exception {
     given(
-        authService
-            .checkUserRole(eq(lostItemId), eq(returnItemOwner), eq(lostItemOwner), eq(token)))
+        authService.checkUserRole(eq(lostItemId), eq(returnItemOwner),
+            eq(lostItemOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
     given(returnItemService.getReturnItem(eq(returnItemOwner), eq(lostItemId)))
         .willReturn(null);

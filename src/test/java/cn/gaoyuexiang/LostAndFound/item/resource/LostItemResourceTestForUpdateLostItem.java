@@ -1,18 +1,15 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
-import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
-import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +34,7 @@ public class LostItemResourceTestForUpdateLostItem {
   private TestRestTemplate restTemplate;
 
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemServiceImpl lostItemServiceImpl;
 
   @MockBean
   private AuthService authService;
@@ -65,9 +62,9 @@ public class LostItemResourceTestForUpdateLostItem {
   @Test
   public void should_response_200_when_update_success() throws Exception {
     LostItem lostItem = new LostItem();
-    given(authService.checkUserRole(eq(id), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
-    given(lostItemService.update(eq(updater), eq(id), eq(username))).willReturn(lostItem);
+    given(lostItemServiceImpl.update(eq(updater), eq(id), eq(username))).willReturn(lostItem);
     ResponseEntity<LostItem> entity =
         restTemplate.exchange(path, PUT, requestEntity, LostItem.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
@@ -76,7 +73,7 @@ public class LostItemResourceTestForUpdateLostItem {
 
   @Test
   public void should_response_401_when_user_is_not_online() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);
@@ -85,7 +82,7 @@ public class LostItemResourceTestForUpdateLostItem {
 
   @Test
   public void should_response_401_when_user_is_not_owner_of_item() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);
@@ -94,7 +91,7 @@ public class LostItemResourceTestForUpdateLostItem {
 
   @Test
   public void should_response_404_when_item_not_found() throws Exception {
-    given(authService.checkUserRole(eq(id),eq(username),eq(token)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);

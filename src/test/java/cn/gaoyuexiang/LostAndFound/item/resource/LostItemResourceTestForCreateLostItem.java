@@ -7,6 +7,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class LostItemResourceTestForCreateLostItem {
   private UserService userService;
 
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemServiceImpl lostItemService;
 
   private String username;
   private String token;

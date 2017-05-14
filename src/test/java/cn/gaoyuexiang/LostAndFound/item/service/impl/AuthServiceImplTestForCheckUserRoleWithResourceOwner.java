@@ -4,10 +4,11 @@ import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,8 +26,8 @@ public class AuthServiceImplTestForCheckUserRoleWithResourceOwner {
   @Autowired
   private AuthService authService;
 
-  @MockBean
-  private LostItemService lostItemService;
+  @Mock
+  private BelongChecker belongChecker;
 
   @MockBean
   private UserService userService;
@@ -37,11 +38,12 @@ public class AuthServiceImplTestForCheckUserRoleWithResourceOwner {
     String token = "token";
     long superResourceId = 123L;
     when(userService.checkState(username, token)).thenReturn(UserState.ONLINE);
-    when(lostItemService.isBelong(superResourceId, username)).thenReturn(false);
-    UserRole userRole = authService.checkUserRole(superResourceId, username, username, token);
+    when(belongChecker.isBelong(superResourceId, username)).thenReturn(false);
+    UserRole userRole = authService.checkUserRole(superResourceId, username,
+        username, token, belongChecker);
     assertThat(userRole, is(UserRole.RESOURCE_OWNER));
     verify(userService).checkState(username, token);
-    verify(lostItemService).isBelong(superResourceId, username);
+    verify(belongChecker).isBelong(superResourceId, username);
   }
 
   @Test
@@ -51,11 +53,12 @@ public class AuthServiceImplTestForCheckUserRoleWithResourceOwner {
     long superResourceId = 123L;
     String token = "token";
     when(userService.checkState(requestUser, token)).thenReturn(UserState.ONLINE);
-    when(lostItemService.isBelong(superResourceId, requestUser)).thenReturn(true);
-    UserRole userRole = authService.checkUserRole(superResourceId, resourceOwner, requestUser, token);
+    when(belongChecker.isBelong(superResourceId, requestUser)).thenReturn(true);
+    UserRole userRole = authService.checkUserRole(superResourceId, resourceOwner,
+        requestUser, token, belongChecker);
     assertThat(userRole, is(UserRole.SUPER_RESOURCE_OWNER));
     verify(userService).checkState(requestUser, token);
-    verify(lostItemService).isBelong(superResourceId, requestUser);
+    verify(belongChecker).isBelong(superResourceId, requestUser);
   }
 
   @Test
@@ -65,11 +68,12 @@ public class AuthServiceImplTestForCheckUserRoleWithResourceOwner {
     long superResourceId = 123L;
     String token = "token";
     when(userService.checkState(requestUser, token)).thenReturn(UserState.ONLINE);
-    when(lostItemService.isBelong(superResourceId, requestUser)).thenReturn(false);
-    UserRole userRole = authService.checkUserRole(superResourceId, resourceOwner, requestUser, token);
+    when(belongChecker.isBelong(superResourceId, requestUser)).thenReturn(false);
+    UserRole userRole = authService.checkUserRole(superResourceId, resourceOwner,
+        requestUser, token, belongChecker);
     assertThat(userRole, is(UserRole.NOT_OWNER));
     verify(userService).checkState(requestUser, token);
-    verify(lostItemService).isBelong(superResourceId, requestUser);
+    verify(belongChecker).isBelong(superResourceId, requestUser);
   }
 
   @Test(expected = UnauthorizedException.class)
@@ -79,7 +83,8 @@ public class AuthServiceImplTestForCheckUserRoleWithResourceOwner {
     long superResourceId = 123L;
     String token = "token";
     when(userService.checkState(requestUser, token)).thenReturn(UserState.OFFLINE);
-    authService.checkUserRole(superResourceId, resourceOwner, requestUser, token);
+    authService.checkUserRole(superResourceId, resourceOwner,
+        requestUser, token, belongChecker);
     verify(userService).checkState(requestUser, token);
   }
 }

@@ -1,16 +1,14 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
-import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
-import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,9 +37,9 @@ public class ReturnItemResourceTestForPUT {
 
   @MockBean
   private ReturnItemService returnItemService;
-  
+
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemServiceImpl lostItemServiceImpl;
 
   @MockBean
   private AuthService authService;
@@ -69,9 +67,10 @@ public class ReturnItemResourceTestForPUT {
   @Test
   public void should_response_200_when_service_return_an_item() throws Exception {
     ReturnItem returnItem = new ReturnItem();
-    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.RESOURCE_OWNER);
-    given(lostItemService.isClosed(lostItemId)).willReturn(false);
+    given(lostItemServiceImpl.isClosed(lostItemId)).willReturn(false);
     given(returnItemService.create(eq(username), eq(lostItemId), eq(creator)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity =
@@ -82,7 +81,8 @@ public class ReturnItemResourceTestForPUT {
 
   @Test
   public void should_response_401_when_requestUser_is_lostItem_owner() throws Exception {
-    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -90,7 +90,8 @@ public class ReturnItemResourceTestForPUT {
 
   @Test
   public void should_response_401_when_user_not_online() throws Exception {
-    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -100,7 +101,8 @@ public class ReturnItemResourceTestForPUT {
   public void should_response_401_when_requestUser_is_not_resourceOwner() throws Exception {
     String resourceOwner = "resourceOwner";
     path = path.replace(username, resourceOwner);
-    given(authService.checkUserRole(eq(lostItemId), eq(resourceOwner), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(resourceOwner),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -108,16 +110,18 @@ public class ReturnItemResourceTestForPUT {
 
   @Test
   public void should_response_403_when_lostItem_state_is_closed() throws Exception {
-    given(authService.checkUserRole(eq(lostItemId),eq(username),eq(username),eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.RESOURCE_OWNER);
-    given(lostItemService.isClosed(eq(lostItemId))).willReturn(true);
+    given(lostItemServiceImpl.isClosed(eq(lostItemId))).willReturn(true);
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.FORBIDDEN));
   }
 
   @Test
   public void should_response_403_when_item_state_is_closed() throws Exception {
-    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willReturn(UserRole.RESOURCE_OWNER);
     given(returnItemService.create(eq(username), eq(lostItemId), eq(creator)))
         .willThrow(new UpdateItemException());
@@ -127,7 +131,8 @@ public class ReturnItemResourceTestForPUT {
 
   @Test
   public void should_response_404_when_lostItem_not_exist() throws Exception {
-    given(authService.checkUserRole(eq(lostItemId), eq(username), eq(username), eq(token)))
+    given(authService.checkUserRole(eq(lostItemId), eq(username),
+        eq(username), eq(token), eq(lostItemServiceImpl)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.NOT_FOUND));

@@ -5,6 +5,7 @@ import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class LostItemResourceTestForGetLostItemList {
   private TestRestTemplate restTemplate;
 
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemServiceImpl lostItemService;
 
   @Test
   public void should_response_200_when_page_is_valid() throws Exception {

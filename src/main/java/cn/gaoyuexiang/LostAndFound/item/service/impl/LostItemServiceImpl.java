@@ -14,6 +14,7 @@ import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
+import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NO
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
-public class LostItemServiceImpl implements LostItemService {
+public class LostItemServiceImpl implements LostItemService, BelongChecker {
 
   private final LostItemRepo lostItemRepo;
   private final IdCreateService idCreateService;

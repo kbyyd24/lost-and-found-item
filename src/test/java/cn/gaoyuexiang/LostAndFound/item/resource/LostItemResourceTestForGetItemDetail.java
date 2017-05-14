@@ -3,6 +3,7 @@ package cn.gaoyuexiang.LostAndFound.item.resource;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ public class LostItemResourceTestForGetItemDetail {
   private TestRestTemplate restTemplate;
   
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemServiceImpl lostItemService;
 
   private long id;
   private String path;
