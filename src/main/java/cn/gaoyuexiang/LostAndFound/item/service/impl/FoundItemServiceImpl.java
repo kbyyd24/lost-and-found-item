@@ -10,9 +10,13 @@ import cn.gaoyuexiang.LostAndFound.item.repository.FoundItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 public class FoundItemServiceImpl implements FoundItemService {
@@ -38,8 +42,12 @@ public class FoundItemServiceImpl implements FoundItemService {
   }
 
   @Override
-  public List<FoundItemPageItem> loadPageItems(int page, int size, ItemSort sort) {
-    return null;
+  public List<FoundItemPageItem> loadPage(int page, int size, ItemSort sort) {
+    PageRequest pageRequest = new PageRequest(page, size, DESC, sort.getColumnName());
+    List<FoundItem> items = foundItemRepo.findAll(pageRequest).getContent();
+    return items.stream()
+        .map(this::buildPageItem)
+        .collect(toList());
   }
 
   @Override
@@ -89,5 +97,19 @@ public class FoundItemServiceImpl implements FoundItemService {
     foundItem.setPictures(creator.getPictures());
     foundItem.setState(ItemState.ENABLE.getValue());
     return foundItem;
+  }
+
+  private FoundItemPageItem buildPageItem(FoundItem foundItem) {
+    FoundItemPageItem pageItem = new FoundItemPageItem();
+    pageItem.setId(foundItem.getId());
+    pageItem.setTitle(foundItem.getTitle());
+    pageItem.setItemName(foundItem.getItemName());
+    pageItem.setCreateTime(foundItem.getCreateTime());
+    pageItem.setFoundTime(foundItem.getFoundTime());
+    List<String> pictures = foundItem.getPictures();
+    if (pictures != null && !pictures.isEmpty()) {
+      pageItem.setPicture(pictures.get(0));
+    }
+    return pageItem;
   }
 }

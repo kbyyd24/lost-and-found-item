@@ -13,7 +13,7 @@ public interface FoundItemService {
 
   FoundItem create(FoundItemCreator creator, String createUser);
 
-  List<FoundItemPageItem> loadPageItems(int page, int size, ItemSort sort);
+  List<FoundItemPageItem> loadPage(int page, int size, ItemSort sort);
 
   FoundItem loadOne(long itemId);
 

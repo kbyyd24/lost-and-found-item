@@ -12,9 +12,6 @@ import java.util.List;
 @Repository
 public interface FoundItemRepo extends PagingAndSortingRepository<FoundItem, Long> {
 
-  @Query("select foundItem from FoundItem foundItem")
-  List<FoundItem> findAll(Sort sort, Pageable pageable);
-
   FoundItem findById(long id);
 
   @Query("select foundItem.id from FoundItem foundItem order by foundItem.createTime desc")
