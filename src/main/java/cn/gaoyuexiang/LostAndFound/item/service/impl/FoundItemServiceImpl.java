@@ -2,6 +2,7 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
+import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemPageItem;
@@ -14,8 +15,10 @@ import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.FOUND_ITEM_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -72,8 +75,12 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
   }
 
   @Override
-  public boolean isBelong(long itemId, String updateUser) {
-    return false;
+  public boolean isBelong(long itemId, String username) {
+    FoundItem foundItem = foundItemRepo.findById(itemId);
+    if (foundItem == null) {
+      throw new NotFoundException(FOUND_ITEM_NOT_FOUND.getReason());
+    }
+    return foundItem.getOwner().equals(username);
   }
 
   @Override
