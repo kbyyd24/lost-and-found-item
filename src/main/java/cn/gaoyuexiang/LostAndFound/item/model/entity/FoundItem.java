@@ -26,6 +26,40 @@ public class FoundItem {
 
   public FoundItem() {}
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    FoundItem foundItem = (FoundItem) o;
+
+    if (getId() != foundItem.getId()) return false;
+    if (getCreateTime() != foundItem.getCreateTime()) return false;
+    if (getFoundTime() != foundItem.getFoundTime()) return false;
+    if (getTitle() != null ? !getTitle().equals(foundItem.getTitle()) : foundItem.getTitle() != null) return false;
+    if (getOwner() != null ? !getOwner().equals(foundItem.getOwner()) : foundItem.getOwner() != null) return false;
+    if (getItemName() != null ? !getItemName().equals(foundItem.getItemName()) : foundItem.getItemName() != null)
+      return false;
+    if (getDescription() != null ? !getDescription().equals(foundItem.getDescription()) : foundItem.getDescription() != null)
+      return false;
+    if (getState() != null ? !getState().equals(foundItem.getState()) : foundItem.getState() != null) return false;
+    return getPictures() != null ? getPictures().equals(foundItem.getPictures()) : foundItem.getPictures() == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = (int) (getId() ^ (getId() >>> 32));
+    result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
+    result = 31 * result + (getOwner() != null ? getOwner().hashCode() : 0);
+    result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
+    result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
+    result = 31 * result + (int) (getFoundTime() ^ (getFoundTime() >>> 32));
+    result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+    result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
+    return result;
+  }
+
   public long getId() {
     return id;
   }
