@@ -10,6 +10,7 @@ import cn.gaoyuexiang.LostAndFound.item.repository.FoundItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
+import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
-public class FoundItemServiceImpl implements FoundItemService {
+public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
 
   private FoundItemRepo foundItemRepo;
   private TimeService timeService;
@@ -70,28 +71,6 @@ public class FoundItemServiceImpl implements FoundItemService {
     return foundItemRepo.save(existItem);
   }
 
-  private void updateItem(FoundItemCreator updater, FoundItem existItem) {
-    if (needUpdate(updater.getTitle(), existItem.getTitle())) {
-      existItem.setTitle(updater.getTitle());
-    }
-    if (needUpdate(updater.getItemName(), existItem.getItemName())) {
-      existItem.setItemName(updater.getItemName());
-    }
-    if (needUpdate(updater.getFoundTime(), existItem.getFoundTime())) {
-      existItem.setFoundTime(updater.getFoundTime());
-    }
-    if (needUpdate(updater.getDescription(), existItem.getDescription())) {
-      existItem.setDescription(updater.getDescription());
-    }
-    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
-      existItem.setPictures(updater.getPictures());
-    }
-  }
-
-  private <T> boolean needUpdate(T newProp, T oldProp) {
-    return newProp != null && !newProp.equals(0L) && !newProp.equals(oldProp);
-  }
-
   @Override
   public boolean isBelong(long itemId, String updateUser) {
     return false;
@@ -138,5 +117,27 @@ public class FoundItemServiceImpl implements FoundItemService {
       pageItem.setPicture(pictures.get(0));
     }
     return pageItem;
+  }
+
+  private <T> boolean needUpdate(T newProp, T oldProp) {
+    return newProp != null && !newProp.equals(0L) && !newProp.equals(oldProp);
+  }
+
+  private void updateItem(FoundItemCreator updater, FoundItem existItem) {
+    if (needUpdate(updater.getTitle(), existItem.getTitle())) {
+      existItem.setTitle(updater.getTitle());
+    }
+    if (needUpdate(updater.getItemName(), existItem.getItemName())) {
+      existItem.setItemName(updater.getItemName());
+    }
+    if (needUpdate(updater.getFoundTime(), existItem.getFoundTime())) {
+      existItem.setFoundTime(updater.getFoundTime());
+    }
+    if (needUpdate(updater.getDescription(), existItem.getDescription())) {
+      existItem.setDescription(updater.getDescription());
+    }
+    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
+      existItem.setPictures(updater.getPictures());
+    }
   }
 }

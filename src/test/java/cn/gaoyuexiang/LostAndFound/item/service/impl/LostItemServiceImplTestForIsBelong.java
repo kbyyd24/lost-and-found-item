@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class LostItemServiceImplTestForIsBelong {
 
   @Autowired
-  private BelongChecker belongChecker;
+  private LostItemServiceImpl belongChecker;
 
   @MockBean
   private LostItemRepo lostItemRepo;
