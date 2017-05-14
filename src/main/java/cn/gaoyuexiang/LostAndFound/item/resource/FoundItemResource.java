@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 
 import java.util.List;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.FOUND_ITEM_NOT_FOUND;
 import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.PAGE_OUT_OF_BOUND;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -54,5 +55,15 @@ public class FoundItemResource {
       throw new UnauthorizedException(userState.name());
     }
     return foundItemService.create(creator, username);
+  }
+
+  @GET
+  @Path("{itemId}")
+  public FoundItem loadOne(@PathParam("itemId") long itemId) {
+    FoundItem foundItem = foundItemService.loadOne(itemId);
+    if (foundItem == null) {
+      throw new NotFoundException(FOUND_ITEM_NOT_FOUND.getReason());
+    }
+    return foundItem;
   }
 }

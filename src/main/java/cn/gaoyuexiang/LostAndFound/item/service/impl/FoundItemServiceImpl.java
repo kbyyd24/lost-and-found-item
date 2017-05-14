@@ -52,7 +52,7 @@ public class FoundItemServiceImpl implements FoundItemService {
 
   @Override
   public FoundItem loadOne(long itemId) {
-    return null;
+    return foundItemRepo.findById(itemId);
   }
 
   @Override
