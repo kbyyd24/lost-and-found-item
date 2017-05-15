@@ -490,8 +490,6 @@
   "reason": "balabala",
   "contact": "melo@gaoyuexiang.cn",
   "state": "uncheck"
-}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>user is item&#39;s owner, but miss action-type header</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
-  "msg": "miss header"
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/401" target="_blank">401</a></h2><p>username and token not match or user is offline or user is not owner of item or return application or user choose unauthorized action</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "msg": "unuseable action"
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/403" target="_blank">403</a></h2><p>If item is closed, return was accepted or sth else due to can not close return application</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
