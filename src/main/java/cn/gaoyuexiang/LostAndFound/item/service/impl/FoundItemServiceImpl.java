@@ -83,6 +83,7 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
   }
 
   @Override
+  @Deprecated
   public boolean isBelong(long itemId, String username) {
     FoundItem foundItem = foundItemRepo.findById(itemId);
     if (foundItem == null) {
