@@ -12,6 +12,7 @@ import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemCloseChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,18 +27,18 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class ReturnItemResource {
 
-  private final ReturnItemService returnItemService;
-  private LostItemService lostItemService;
+  private ReturnItemService returnItemService;
+  private LostItemCloseChecker closeChecker;
   private LostItemBelongChecker belongChecker;
   private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
-                            LostItemService lostItemService,
+                            LostItemCloseChecker closeChecker,
                             LostItemBelongChecker belongChecker,
                             AuthService authService) {
     this.returnItemService = returnItemService;
-    this.lostItemService = lostItemService;
+    this.closeChecker = closeChecker;
     this.belongChecker = belongChecker;
     this.authService = authService;
   }
@@ -88,7 +89,7 @@ public class ReturnItemResource {
     if (userRole != UserRole.RESOURCE_OWNER) {
       throw new UnauthorizedException();
     }
-    if (lostItemService.isClosed(lostItemId)) {
+    if (closeChecker.isClosed(lostItemId)) {
       throw new UpdateItemException("lost item closed");
     }
     return returnItemService.create(returnItemOwner, lostItemId, creator);
@@ -108,7 +109,7 @@ public class ReturnItemResource {
     if (!authService.checkAction(userRole, action)) {
       throw new UnauthorizedException(action.getValue());
     }
-    if (lostItemService.isClosed(superResourceId)) {
+    if (closeChecker.isClosed(superResourceId)) {
       throw new UpdateItemException("lost item closed");
     }
     return returnItemService.delete(resourceOwner, superResourceId, action);

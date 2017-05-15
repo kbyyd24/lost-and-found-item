@@ -7,9 +7,9 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemCloseChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ public class ReturnItemResourceTestForPUT {
   private ReturnItemService returnItemService;
 
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemCloseChecker closeChecker;
 
   @MockBean
   private AuthService authService;
@@ -74,7 +74,7 @@ public class ReturnItemResourceTestForPUT {
     given(authService.checkUserRole(eq(lostItemId), eq(username),
         eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
-    given(lostItemService.isClosed(lostItemId)).willReturn(false);
+    given(closeChecker.isClosed(lostItemId)).willReturn(false);
     given(returnItemService.create(eq(username), eq(lostItemId), eq(creator)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity =
@@ -117,7 +117,7 @@ public class ReturnItemResourceTestForPUT {
     given(authService.checkUserRole(eq(lostItemId), eq(username),
         eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
-    given(lostItemService.isClosed(eq(lostItemId))).willReturn(true);
+    given(closeChecker.isClosed(eq(lostItemId))).willReturn(true);
     ResponseEntity<Message> entity = putRequest();
     assertThat(entity.getStatusCode(), is(HttpStatus.FORBIDDEN));
   }

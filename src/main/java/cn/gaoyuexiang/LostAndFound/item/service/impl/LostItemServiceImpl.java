@@ -138,15 +138,6 @@ public class LostItemServiceImpl implements LostItemService {
     return lostItemRepo.save(existItem);
   }
 
-  @Override
-  public boolean isClosed(long itemId) {
-    LostItem lostItem = lostItemRepo.findById(itemId);
-    if (lostItem == null) {
-      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
-    }
-    return lostItem.getState().equals(ItemState.CLOSED.getValue());
-  }
-
   private void updateExistItem(LostItemCreator updater, LostItem existItem) {
     if (needUpdate(updater.getTitle(), existItem.getTitle())) {
       existItem.setTitle(updater.getTitle());

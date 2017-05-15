@@ -6,9 +6,9 @@ import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemCloseChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ public class ReturnItemResourceTestForDelete {
   private ReturnItemService returnItemService;
 
   @MockBean
-  private LostItemService lostItemService;
+  private LostItemCloseChecker closeChecker;
 
   @MockBean
   private LostItemBelongChecker belongChecker;
@@ -73,7 +73,7 @@ public class ReturnItemResourceTestForDelete {
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.ACCEPT))
         .willReturn(true);
-    given(lostItemService.isClosed(eq(superResourceId))).willReturn(false);
+    given(closeChecker.isClosed(eq(superResourceId))).willReturn(false);
     given(returnItemService.delete(eq(resourceOwner), eq(superResourceId), eq(ActionType.ACCEPT)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity = getReturnItemResponseEntity();
@@ -91,7 +91,7 @@ public class ReturnItemResourceTestForDelete {
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.REJECT))
         .willReturn(true);
-    given(lostItemService.isClosed(eq(superResourceId))).willReturn(false);
+    given(closeChecker.isClosed(eq(superResourceId))).willReturn(false);
     given(returnItemService.delete(eq(resourceOwner), eq(superResourceId), eq(ActionType.REJECT)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity = getReturnItemResponseEntity();
@@ -109,7 +109,7 @@ public class ReturnItemResourceTestForDelete {
         .willReturn(UserRole.RESOURCE_OWNER);
     given(authService.checkAction(UserRole.RESOURCE_OWNER, ActionType.CANCEL))
         .willReturn(true);
-    given(lostItemService.isClosed(eq(superResourceId))).willReturn(false);
+    given(closeChecker.isClosed(eq(superResourceId))).willReturn(false);
     given(returnItemService.delete(eq(resourceOwner), eq(superResourceId), eq(ActionType.CANCEL)))
         .willReturn(returnItem);
     ResponseEntity<ReturnItem> entity = getReturnItemResponseEntity();
@@ -173,7 +173,7 @@ public class ReturnItemResourceTestForDelete {
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.ACCEPT))
         .willReturn(true);
-    given(lostItemService.isClosed(eq(superResourceId)))
+    given(closeChecker.isClosed(eq(superResourceId)))
         .willReturn(true);
     ResponseEntity<Message> entity = getMessageResponseEntity();
     assertThat(entity.getStatusCode(), is(HttpStatus.FORBIDDEN));

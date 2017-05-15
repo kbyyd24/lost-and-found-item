@@ -19,5 +19,4 @@ public interface LostItemService {
 
   LostItem update(LostItemCreator updater, long itemId, String updateUser);
 
-  boolean isClosed(long itemId);
 }
