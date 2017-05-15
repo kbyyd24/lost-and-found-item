@@ -14,4 +14,5 @@ public interface ClaimItemRepo extends PagingAndSortingRepository<ClaimItem, Lon
 
   ClaimItem findByClaimUserAndFoundItemId(String claimUser, long foundItemId);
 
+  ClaimItem findByFoundItemIdAndState(long foundItemId, String state);
 }

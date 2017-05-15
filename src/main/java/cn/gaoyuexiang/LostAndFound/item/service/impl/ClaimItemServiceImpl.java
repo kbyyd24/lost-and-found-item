@@ -1,19 +1,30 @@
 package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
+import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ClaimItem;
+import cn.gaoyuexiang.LostAndFound.item.repository.ClaimItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ClaimItemServiceImpl implements ClaimItemService {
+
+  private ClaimItemRepo claimItemRepo;
+
+  @Autowired
+  public ClaimItemServiceImpl(ClaimItemRepo claimItemRepo) {
+    this.claimItemRepo = claimItemRepo;
+  }
+
   @Override
   public boolean hasUnreadItem(long foundItemId) {
-    return false;
+    return claimItemRepo.findByFoundItemIdAndState(foundItemId, ItemState.UNREAD.getValue()) != null;
   }
 
   @Override
