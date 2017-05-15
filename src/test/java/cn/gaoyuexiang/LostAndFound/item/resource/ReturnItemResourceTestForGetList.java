@@ -7,6 +7,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class ReturnItemResourceTestForGetList {
   private AuthService authService;
 
   @MockBean
-  private LostItemServiceImpl belongChecker;
+  private LostItemBelongChecker belongChecker;
 
   private String username;
   private String token;

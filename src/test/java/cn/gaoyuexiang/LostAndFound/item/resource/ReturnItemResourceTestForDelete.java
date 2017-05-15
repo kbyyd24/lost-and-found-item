@@ -7,6 +7,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,9 @@ public class ReturnItemResourceTestForDelete {
   @MockBean
   private LostItemServiceImpl lostItemServiceImpl;
 
+  @MockBean
+  private LostItemBelongChecker belongChecker;
+
   private String resourceOwner;
   private String requestUser;
   private long superResourceId;
@@ -65,7 +69,7 @@ public class ReturnItemResourceTestForDelete {
     ReturnItem returnItem = new ReturnItem();
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.ACCEPT))
         .willReturn(true);
@@ -83,7 +87,7 @@ public class ReturnItemResourceTestForDelete {
     ReturnItem returnItem = new ReturnItem();
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.REJECT))
         .willReturn(true);
@@ -101,7 +105,7 @@ public class ReturnItemResourceTestForDelete {
     ReturnItem returnItem = new ReturnItem();
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(resourceOwner), eq(token), eq(lostItemServiceImpl)))
+            eq(resourceOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
     given(authService.checkAction(UserRole.RESOURCE_OWNER, ActionType.CANCEL))
         .willReturn(true);
@@ -117,7 +121,7 @@ public class ReturnItemResourceTestForDelete {
   public void should_response_401_when_user_not_online() throws Exception {
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity = getMessageResponseEntity();
     assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
@@ -127,7 +131,7 @@ public class ReturnItemResourceTestForDelete {
   public void should_response_401_when_user_is_not_owner() throws Exception {
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willReturn(UserRole.NOT_OWNER);
     given(authService.checkAction(UserRole.NOT_OWNER, ActionType.ACCEPT))
         .willReturn(false);
@@ -140,7 +144,7 @@ public class ReturnItemResourceTestForDelete {
     buildEntity(requestUser, "cancel");
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.CANCEL))
         .willReturn(false);
@@ -153,7 +157,7 @@ public class ReturnItemResourceTestForDelete {
     buildEntity(resourceOwner, "accept");
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(resourceOwner), eq(token), eq(lostItemServiceImpl)))
+            eq(resourceOwner), eq(token), eq(belongChecker)))
         .willReturn(UserRole.RESOURCE_OWNER);
     given(authService.checkAction(UserRole.RESOURCE_OWNER, ActionType.ACCEPT))
         .willReturn(false);
@@ -165,7 +169,7 @@ public class ReturnItemResourceTestForDelete {
   public void should_response_403_when_user_has_auth_but_lostItem_state_is_closed() throws Exception {
     given(
         authService.checkUserRole(eq(superResourceId), eq(resourceOwner),
-            eq(requestUser), eq(token), eq(lostItemServiceImpl)))
+            eq(requestUser), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(authService.checkAction(UserRole.SUPER_RESOURCE_OWNER, ActionType.ACCEPT))
         .willReturn(true);

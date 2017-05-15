@@ -10,6 +10,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,14 +29,17 @@ public class ReturnItemResource {
 
   private final ReturnItemService returnItemService;
   private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemBelongChecker belongChecker;
   private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
                             LostItemServiceImpl lostItemServiceImpl,
+                            LostItemBelongChecker belongChecker,
                             AuthService authService) {
     this.returnItemService = returnItemService;
     this.lostItemServiceImpl = lostItemServiceImpl;
+    this.belongChecker = belongChecker;
     this.authService = authService;
   }
 
@@ -46,7 +50,7 @@ public class ReturnItemResource {
                              @QueryParam("page") @DefaultValue("1") int page,
                              @QueryParam("listSize") @DefaultValue("8") int listSize,
                              @QueryParam("sort") @DefaultValue("create_time") String sort) {
-    if (authService.checkUserRole(lostItemId, username, userToken, lostItemServiceImpl) == UserRole.NOT_OWNER) {
+    if (authService.checkUserRole(lostItemId, username, userToken, belongChecker) == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
     ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
@@ -61,7 +65,7 @@ public class ReturnItemResource {
                                 @HeaderParam("username") String requestUser,
                                 @HeaderParam("user-token") String userToken) {
     UserRole userRole = authService.checkUserRole(lostItemId, returnItemOwner,
-        requestUser, userToken, lostItemServiceImpl);
+        requestUser, userToken, belongChecker);
     if (userRole == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(userRole.name());
     }
@@ -81,7 +85,7 @@ public class ReturnItemResource {
                                @HeaderParam("user-token") String userToken,
                                ReturnItemCreator creator) {
     UserRole userRole = authService.checkUserRole(lostItemId, returnItemOwner,
-        requestUser, userToken, lostItemServiceImpl);
+        requestUser, userToken, belongChecker);
     if (userRole != UserRole.RESOURCE_OWNER) {
       throw new UnauthorizedException();
     }
@@ -100,7 +104,7 @@ public class ReturnItemResource {
                                     @HeaderParam("action-type") @DefaultValue("cancel")
                                           String actionName) {
     UserRole userRole = authService.checkUserRole(superResourceId, resourceOwner,
-        requestUser, userToken, lostItemServiceImpl);
+        requestUser, userToken, belongChecker);
     ActionType action = ActionType.getByValue(actionName);
     if (!authService.checkAction(userRole, action)) {
       throw new UnauthorizedException(action.getValue());

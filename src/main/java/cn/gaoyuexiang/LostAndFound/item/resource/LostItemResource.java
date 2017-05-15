@@ -9,6 +9,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,14 +27,17 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class LostItemResource {
 
   private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemBelongChecker belongChecker;
   private UserService userService;
   private AuthService authService;
 
   @Autowired
   public LostItemResource(LostItemServiceImpl lostItemServiceImpl,
+                          LostItemBelongChecker belongChecker,
                           UserService userService,
                           AuthService authService) {
     this.lostItemServiceImpl = lostItemServiceImpl;
+    this.belongChecker = belongChecker;
     this.userService = userService;
     this.authService = authService;
   }
@@ -79,7 +83,7 @@ public class LostItemResource {
                                  @HeaderParam("username") String username,
                                  @HeaderParam("user-token") String userToken,
                                  LostItemCreator updater) {
-    if (authService.checkUserRole(id, username, userToken, lostItemServiceImpl) == UserRole.NOT_OWNER) {
+    if (authService.checkUserRole(id, username, userToken, belongChecker) == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
     return lostItemServiceImpl.update(updater, id, username);
@@ -90,7 +94,7 @@ public class LostItemResource {
   public LostItem closeItem(@PathParam("itemId") long id,
                             @HeaderParam("username") String username,
                             @HeaderParam("user-token") String userToken) {
-    if (authService.checkUserRole(id, username, userToken, lostItemServiceImpl) == UserRole.NOT_OWNER) {
+    if (authService.checkUserRole(id, username, userToken, belongChecker) == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }
     return lostItemServiceImpl.close(id);

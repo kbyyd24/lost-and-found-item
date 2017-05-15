@@ -6,6 +6,7 @@ import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class LostItemResourceTestForDelete {
   @MockBean
   private LostItemServiceImpl lostItemServiceImpl;
 
+  @MockBean
+  private LostItemBelongChecker belongChecker;
+
   private String username;
   private String token;
   private long id;
@@ -60,7 +64,7 @@ public class LostItemResourceTestForDelete {
   @Test
   public void should_response_200_when_close_success() throws Exception {
     LostItem lostItem = new LostItem();
-    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(lostItemServiceImpl.close(eq(id))).willReturn(lostItem);
     ResponseEntity<LostItem> entity =
@@ -71,7 +75,7 @@ public class LostItemResourceTestForDelete {
 
   @Test
   public void should_response_401_when_user_is_not_online() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
@@ -80,7 +84,7 @@ public class LostItemResourceTestForDelete {
 
   @Test
   public void should_response_401_when_user_not_item_owner() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
@@ -89,7 +93,7 @@ public class LostItemResourceTestForDelete {
 
   @Test
   public void should_response_403_when_throw_CloseItemException() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(lostItemServiceImpl.close(eq(id))).willThrow(new CloseItemException(""));
     ResponseEntity<Message> entity =
@@ -99,7 +103,7 @@ public class LostItemResourceTestForDelete {
 
   @Test
   public void should_response_404_when_item_not_found() throws Exception {
-    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(lostItemServiceImpl)))
+    given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
