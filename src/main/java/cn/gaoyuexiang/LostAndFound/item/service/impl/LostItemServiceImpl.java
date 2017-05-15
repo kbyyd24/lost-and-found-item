@@ -139,6 +139,7 @@ public class LostItemServiceImpl implements LostItemService, BelongChecker {
   }
 
   @Override
+  @Deprecated
   public boolean isBelong(long itemId, String username) {
     LostItem lostItem = lostItemRepo.findById(itemId);
     if (lostItem == null) {

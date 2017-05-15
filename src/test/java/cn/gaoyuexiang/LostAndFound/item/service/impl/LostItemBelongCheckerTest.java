@@ -17,10 +17,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LostItemServiceImplTestForIsBelong {
+public class LostItemBelongCheckerTest {
 
   @Autowired
-  private LostItemServiceImpl belongChecker;
+  private LostItemBelongChecker belongChecker;
 
   @MockBean
   private LostItemRepo lostItemRepo;
