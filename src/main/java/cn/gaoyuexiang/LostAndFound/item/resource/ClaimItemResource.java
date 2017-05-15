@@ -1,5 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
+import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
@@ -93,4 +94,25 @@ public class ClaimItemResource {
     return claimItemService.create(foundItemId, resourceOwner, creator);
   }
 
+  @DELETE
+  @Path("{resourceOwner}")
+  public ClaimItem delete(@PathParam("itemId") long foundItemId,
+                          @PathParam("resourceOwner") String resourceOwner,
+                          @HeaderParam("username") String requestUser,
+                          @HeaderParam("user-token") String userToken,
+                          @HeaderParam("action-type") @DefaultValue("cancel")
+                              String actionName) {
+    UserRole userRole =
+        authService.checkUserRole(foundItemId, resourceOwner, requestUser, userToken, belongChecker);
+    ActionType action = ActionType.getByValue(actionName);
+    if (!authService.checkAction(userRole, action)) {
+      throw new UnauthorizedException("role and action not match");
+    }
+    if (closeChecker.isClosed(foundItemId))
+    {
+      throw new UpdateItemException("found item closed");
+    }
+    ClaimItem delete = claimItemService.delete(foundItemId, resourceOwner, action);
+    return delete;
+  }
 }
