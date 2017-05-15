@@ -4,11 +4,14 @@ import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
+import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ClaimItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemCloseChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +28,16 @@ public class ClaimItemResource {
 
   private ClaimItemService claimItemService;
   private AuthService authService;
+  private FoundItemCloseChecker closeChecker;
   private FoundItemBelongChecker belongChecker;
 
   public ClaimItemResource(ClaimItemService claimItemService,
                            AuthService authService,
+                           FoundItemCloseChecker closeChecker,
                            FoundItemBelongChecker belongChecker) {
     this.claimItemService = claimItemService;
     this.authService = authService;
+    this.closeChecker = closeChecker;
     this.belongChecker = belongChecker;
   }
 
@@ -67,4 +73,24 @@ public class ClaimItemResource {
     }
     return claimItem;
   }
+
+  @PUT
+  @Path("{resourceOwner}")
+  @Consumes(APPLICATION_JSON)
+  public ClaimItem put(@PathParam("itemId") long foundItemId,
+                       @PathParam("resourceOwner") String resourceOwner,
+                       @HeaderParam("username") String requestUser,
+                       @HeaderParam("user-token") String userToken,
+                       ClaimItemCreator creator) {
+    UserRole userRole =
+        authService.checkUserRole(foundItemId, resourceOwner, requestUser, userToken, belongChecker);
+    if (userRole != UserRole.RESOURCE_OWNER) {
+      throw new UnauthorizedException(userRole.name());
+    }
+    if (closeChecker.isClosed(foundItemId)) {
+      throw new UpdateItemException("found item closed");
+    }
+    return claimItemService.create(foundItemId, resourceOwner, creator);
+  }
+
 }
