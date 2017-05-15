@@ -63,7 +63,7 @@ public class ClaimItemResourceTestForGetPage {
     size = 4;
     sort = ItemSort.CREATE_TIME;
     String query = String.format("?page=%d&size=%d&sort=%s", page, size, sort.getColumnName());
-    path = String.format("/item/found/%s/returns%s", itemId, query);
+    path = String.format("/item/found/%s/claim%s", itemId, query);
     requestUser = "username";
     userToken = "user-token";
     HttpHeaders httpHeaders = new HttpHeaders();

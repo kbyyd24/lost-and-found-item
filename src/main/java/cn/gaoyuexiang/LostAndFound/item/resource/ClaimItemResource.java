@@ -1,9 +1,11 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
+import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemPageItem;
+import cn.gaoyuexiang.LostAndFound.item.model.entity.ClaimItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
@@ -17,7 +19,7 @@ import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.PAGE_OUT_OF_
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Component
-@Path("/item/found/{itemId}/returns")
+@Path("/item/found/{itemId}/claim")
 @Produces(APPLICATION_JSON)
 public class ClaimItemResource {
 
@@ -49,4 +51,20 @@ public class ClaimItemResource {
     return claimItemService.loadPage(itemId, page, size, sort);
   }
 
+  @GET
+  @Path("{resourceOwner}")
+  public ClaimItem loadOne(@PathParam("itemId") long foundItemId,
+                           @PathParam("resourceOwner") String resourceOwner,
+                           @HeaderParam("username") String requestUser,
+                           @HeaderParam("user-token") String userToken) {
+    if (authService.checkUserRole(foundItemId, resourceOwner, requestUser, userToken, belongChecker)
+        == UserRole.NOT_OWNER) {
+      throw new UnauthorizedException(UserRole.NOT_OWNER.name());
+    }
+    ClaimItem claimItem = claimItemService.loadOne(foundItemId, resourceOwner);
+    if (claimItem == null) {
+      throw new NotFoundException(NotFoundReason.CLAIM_ITEM_NOT_FOUND.getReason());
+    }
+    return claimItem;
+  }
 }

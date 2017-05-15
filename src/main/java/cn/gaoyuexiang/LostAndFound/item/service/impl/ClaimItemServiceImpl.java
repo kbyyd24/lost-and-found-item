@@ -45,7 +45,7 @@ public class ClaimItemServiceImpl implements ClaimItemService {
 
   @Override
   public ClaimItem loadOne(long foundItemId, String claimUser) {
-    return null;
+    return claimItemRepo.findByClaimUserAndFoundItemId(claimUser, foundItemId);
   }
 
   @Override
