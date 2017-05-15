@@ -1,15 +1,12 @@
 package cn.gaoyuexiang.LostAndFound.item.resource;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
-import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

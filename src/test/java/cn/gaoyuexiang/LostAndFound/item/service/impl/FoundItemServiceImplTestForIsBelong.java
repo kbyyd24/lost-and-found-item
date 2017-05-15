@@ -2,7 +2,6 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.model.entity.FoundItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.FoundItemRepo;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

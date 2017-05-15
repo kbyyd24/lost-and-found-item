@@ -1,4 +1,4 @@
-package cn.gaoyuexiang.LostAndFound.item.service.interfaces;
+package cn.gaoyuexiang.LostAndFound.item.service;
 
 public interface BelongChecker {
 

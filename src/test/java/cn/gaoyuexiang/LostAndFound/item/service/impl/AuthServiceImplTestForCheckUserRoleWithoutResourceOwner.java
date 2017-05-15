@@ -5,7 +5,7 @@ import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.BelongChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

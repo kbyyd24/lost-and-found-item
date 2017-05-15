@@ -2,7 +2,6 @@ package cn.gaoyuexiang.LostAndFound.item.service;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
 import org.springframework.stereotype.Service;
 
 @Service

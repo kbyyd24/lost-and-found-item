@@ -5,9 +5,8 @@ import cn.gaoyuexiang.LostAndFound.item.enums.UserRole;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
 import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
-import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.BelongChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

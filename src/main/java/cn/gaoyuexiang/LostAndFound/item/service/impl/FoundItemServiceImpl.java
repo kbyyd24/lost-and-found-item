@@ -2,7 +2,6 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
-import cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason;
 import cn.gaoyuexiang.LostAndFound.item.exception.CloseItemException;
 import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemCreator;
@@ -13,7 +12,7 @@ import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
-import cn.gaoyuexiang.LostAndFound.item.service.interfaces.BelongChecker;
+import cn.gaoyuexiang.LostAndFound.item.service.BelongChecker;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
