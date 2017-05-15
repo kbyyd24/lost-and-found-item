@@ -6,6 +6,7 @@ import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +23,11 @@ public class ClaimItemResource {
 
   private ClaimItemService claimItemService;
   private AuthService authService;
-  private FoundItemServiceImpl belongChecker;
+  private FoundItemBelongChecker belongChecker;
 
   public ClaimItemResource(ClaimItemService claimItemService,
                            AuthService authService,
-                           FoundItemServiceImpl belongChecker) {
+                           FoundItemBelongChecker belongChecker) {
     this.claimItemService = claimItemService;
     this.authService = authService;
     this.belongChecker = belongChecker;

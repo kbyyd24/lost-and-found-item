@@ -8,7 +8,9 @@ import cn.gaoyuexiang.LostAndFound.item.model.entity.ClaimItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.FoundItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +45,10 @@ public class FoundItemResourceTestForDelete {
   private AuthService authService;
 
   @MockBean
-  private FoundItemServiceImpl foundItemServiceImpl;
+  private FoundItemService foundItemServiceImpl;
+
+  @MockBean
+  private FoundItemBelongChecker belongChecker;
 
   private String username;
   private String userToken;
@@ -68,7 +73,7 @@ public class FoundItemResourceTestForDelete {
     FoundItem foundItem = new FoundItem();
     given(
         authService.checkUserRole(
-            eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+            eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(foundItemServiceImpl.close(eq(itemId))).willReturn(foundItem);
     ResponseEntity<FoundItem> entity =
@@ -81,7 +86,7 @@ public class FoundItemResourceTestForDelete {
   public void should_response_401_when_user_not_online() throws Exception {
     given(
         authService.checkUserRole(
-            eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+            eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
@@ -92,7 +97,7 @@ public class FoundItemResourceTestForDelete {
   public void should_response_401_when_user_not_item_owner() throws Exception {
     given(
         authService.checkUserRole(
-            eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+            eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
@@ -103,7 +108,7 @@ public class FoundItemResourceTestForDelete {
   public void should_response_403_when_foundItem_has_unread_claimItem() throws Exception {
     given(
         authService
-            .checkUserRole(eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+            .checkUserRole(eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(foundItemServiceImpl.close(eq(itemId))).willThrow(new CloseItemException(""));
     ResponseEntity<Message> entity =
@@ -115,7 +120,7 @@ public class FoundItemResourceTestForDelete {
   public void should_response_404_when_item_not_found() throws Exception {
     given(
         authService
-            .checkUserRole(eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+            .checkUserRole(eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);

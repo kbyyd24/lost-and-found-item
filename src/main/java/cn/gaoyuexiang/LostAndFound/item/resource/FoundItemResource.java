@@ -11,6 +11,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.entity.FoundItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
 import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.springframework.stereotype.Component;
 
@@ -27,14 +28,17 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class FoundItemResource {
 
-  private FoundItemServiceImpl foundItemService;
+  private FoundItemService foundItemService;
+  private FoundItemBelongChecker belongChecker;
   private UserService userService;
   private AuthService authService;
 
-  public FoundItemResource(FoundItemServiceImpl foundItemService,
+  public FoundItemResource(FoundItemService foundItemService,
+                           FoundItemBelongChecker belongChecker,
                            UserService userService,
                            AuthService authService) {
     this.foundItemService = foundItemService;
+    this.belongChecker = belongChecker;
     this.userService = userService;
     this.authService = authService;
   }
@@ -80,7 +84,7 @@ public class FoundItemResource {
                           @HeaderParam("username") String requestUser,
                           @HeaderParam("user-token") String userToken,
                           FoundItemCreator updater) {
-    UserRole userRole = authService.checkUserRole(itemId, requestUser, userToken, foundItemService);
+    UserRole userRole = authService.checkUserRole(itemId, requestUser, userToken, belongChecker);
     if (userRole == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(userRole.name());
     }
@@ -92,7 +96,7 @@ public class FoundItemResource {
   public FoundItem close(@PathParam("itemId") long itemId,
                          @HeaderParam("username") String username,
                          @HeaderParam("user-token") String userToken) {
-    UserRole userRole = authService.checkUserRole(itemId, username, userToken, foundItemService);
+    UserRole userRole = authService.checkUserRole(itemId, username, userToken, belongChecker);
     if (userRole != UserRole.SUPER_RESOURCE_OWNER) {
       throw new UnauthorizedException(userRole.name());
     }

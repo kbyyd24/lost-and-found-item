@@ -6,6 +6,8 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.FoundItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.FoundItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.FoundItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.FoundItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +39,10 @@ public class FoundItemResourceTestForPUT {
   private AuthService authService;
 
   @MockBean
-  private FoundItemServiceImpl foundItemServiceImpl;
+  private FoundItemService foundItemServiceImpl;
+
+  @MockBean
+  private FoundItemBelongChecker belongChecker;
 
   private String username;
   private String userToken;
@@ -63,7 +68,7 @@ public class FoundItemResourceTestForPUT {
   public void should_response_200_when_update_success() throws Exception {
     FoundItem foundItem = new FoundItem();
     given(authService.checkUserRole(
-        eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+        eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
     given(foundItemServiceImpl.update(eq(updater), eq(itemId), eq(username)))
         .willReturn(foundItem);
@@ -76,7 +81,7 @@ public class FoundItemResourceTestForPUT {
   @Test
   public void should_response_401_when_user_not_online() throws Exception {
     given(authService.checkUserRole(
-        eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+        eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willThrow(new UnauthorizedException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);
@@ -86,7 +91,7 @@ public class FoundItemResourceTestForPUT {
   @Test
   public void should_response_401_when_user_not_item_owner() throws Exception {
     given(authService.checkUserRole(
-        eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+        eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willReturn(UserRole.NOT_OWNER);
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);
@@ -96,7 +101,7 @@ public class FoundItemResourceTestForPUT {
   @Test
   public void should_response_404_when_foundItem_not_found() throws Exception {
     given(authService.checkUserRole(
-        eq(itemId), eq(username), eq(userToken), eq(foundItemServiceImpl)))
+        eq(itemId), eq(username), eq(userToken), eq(belongChecker)))
         .willThrow(new NotFoundException());
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, PUT, requestEntity, Message.class);
