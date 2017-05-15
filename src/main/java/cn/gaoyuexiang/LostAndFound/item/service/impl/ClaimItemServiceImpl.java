@@ -3,11 +3,15 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 import cn.gaoyuexiang.LostAndFound.item.enums.ActionType;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemSort;
 import cn.gaoyuexiang.LostAndFound.item.enums.ItemState;
+import cn.gaoyuexiang.LostAndFound.item.exception.MissPropertyException;
+import cn.gaoyuexiang.LostAndFound.item.exception.UpdateItemException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ClaimItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ClaimItem;
 import cn.gaoyuexiang.LostAndFound.item.repository.ClaimItemRepo;
 import cn.gaoyuexiang.LostAndFound.item.service.ClaimItemService;
+import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
+import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,10 +26,16 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ClaimItemServiceImpl implements ClaimItemService {
 
   private ClaimItemRepo claimItemRepo;
+  private IdCreateService idCreateService;
+  private TimeService timeService;
 
   @Autowired
-  public ClaimItemServiceImpl(ClaimItemRepo claimItemRepo) {
+  public ClaimItemServiceImpl(ClaimItemRepo claimItemRepo,
+                              IdCreateService idCreateService,
+                              TimeService timeService) {
     this.claimItemRepo = claimItemRepo;
+    this.idCreateService = idCreateService;
+    this.timeService = timeService;
   }
 
   @Override
@@ -50,12 +60,40 @@ public class ClaimItemServiceImpl implements ClaimItemService {
 
   @Override
   public ClaimItem create(long foundItemId, String createUser, ClaimItemCreator creator) {
-    return null;
+    checkCompletion(creator);
+    ClaimItem existItem = claimItemRepo.findByClaimUserAndFoundItemId(createUser, foundItemId);
+    if (existItem == null) {
+      existItem = buildClaimItem(foundItemId, createUser, creator);
+    } else if (existItem.getState().equals(ItemState.CLOSED.getValue())) {
+      throw new UpdateItemException("item closed");
+    } else {
+      updateClaimItem(creator, existItem);
+    }
+    return claimItemRepo.save(existItem);
   }
 
   @Override
   public ClaimItem delete(long foundItemId, String claimUser, ActionType action) {
     return null;
+  }
+
+  private void checkCompletion(ClaimItemCreator creator) {
+    if (creator == null || creator.getContact() == null || creator.getReason() == null) {
+      throw new MissPropertyException();
+    }
+  }
+
+  private void updateClaimItem(ClaimItemCreator creator, ClaimItem existItem) {
+    existItem.setContact(creator.getContact());
+    existItem.setReason(creator.getReason());
+  }
+
+  private ClaimItem buildClaimItem(long foundItemId, String createUser, ClaimItemCreator creator) {
+    long latestId = claimItemRepo.findLatestId();
+    long newId = idCreateService.create(latestId);
+    long createTime = timeService.getCurrentTime();
+    return new ClaimItem(newId, createUser, createTime, creator.getReason(),
+        creator.getContact(), ItemState.UNREAD.getValue(), foundItemId);
   }
 
   private ClaimItemPageItem buildClaimItemPageItem(ClaimItem claimItem) {

@@ -26,6 +26,47 @@ public class ClaimItem {
 
   public ClaimItem() {}
 
+  public ClaimItem(long id, String claimUser, long applyTime, String reason,
+                   String contact, String state, long foundItemId) {
+    this.id = id;
+    this.claimUser = claimUser;
+    this.applyTime = applyTime;
+    this.reason = reason;
+    this.contact = contact;
+    this.state = state;
+    this.foundItemId = foundItemId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ClaimItem claimItem = (ClaimItem) o;
+
+    if (getId() != claimItem.getId()) return false;
+    if (getApplyTime() != claimItem.getApplyTime()) return false;
+    if (getFoundItemId() != claimItem.getFoundItemId()) return false;
+    if (getClaimUser() != null ? !getClaimUser().equals(claimItem.getClaimUser()) : claimItem.getClaimUser() != null)
+      return false;
+    if (getReason() != null ? !getReason().equals(claimItem.getReason()) : claimItem.getReason() != null) return false;
+    if (getContact() != null ? !getContact().equals(claimItem.getContact()) : claimItem.getContact() != null)
+      return false;
+    return getState() != null ? getState().equals(claimItem.getState()) : claimItem.getState() == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = (int) (getId() ^ (getId() >>> 32));
+    result = 31 * result + (getClaimUser() != null ? getClaimUser().hashCode() : 0);
+    result = 31 * result + (int) (getApplyTime() ^ (getApplyTime() >>> 32));
+    result = 31 * result + (getReason() != null ? getReason().hashCode() : 0);
+    result = 31 * result + (getContact() != null ? getContact().hashCode() : 0);
+    result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+    result = 31 * result + (int) (getFoundItemId() ^ (getFoundItemId() >>> 32));
+    return result;
+  }
+
   public long getId() {
     return id;
   }
