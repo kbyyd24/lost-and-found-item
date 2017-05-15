@@ -6,8 +6,8 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
-import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.ws.rs.NotFoundException;
@@ -35,7 +38,7 @@ public class LostItemResourceTestForUpdateLostItem {
   private TestRestTemplate restTemplate;
 
   @MockBean
-  private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemService lostItemService;
 
   @MockBean
   private AuthService authService;
@@ -68,7 +71,7 @@ public class LostItemResourceTestForUpdateLostItem {
     LostItem lostItem = new LostItem();
     given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
-    given(lostItemServiceImpl.update(eq(updater), eq(id), eq(username))).willReturn(lostItem);
+    given(lostItemService.update(eq(updater), eq(id), eq(username))).willReturn(lostItem);
     ResponseEntity<LostItem> entity =
         restTemplate.exchange(path, PUT, requestEntity, LostItem.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));

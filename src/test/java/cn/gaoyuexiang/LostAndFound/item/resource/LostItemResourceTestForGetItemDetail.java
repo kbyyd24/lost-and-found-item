@@ -30,7 +30,7 @@ public class LostItemResourceTestForGetItemDetail {
   private TestRestTemplate restTemplate;
   
   @MockBean
-  private LostItemServiceImpl lostItemService;
+  private LostItemService lostItemService;
 
   private long id;
   private String path;

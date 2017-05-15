@@ -43,7 +43,7 @@ public class LostItemResourceTestForCreateLostItem {
   private UserService userService;
 
   @MockBean
-  private LostItemServiceImpl lostItemService;
+  private LostItemService lostItemService;
 
   private String username;
   private String token;

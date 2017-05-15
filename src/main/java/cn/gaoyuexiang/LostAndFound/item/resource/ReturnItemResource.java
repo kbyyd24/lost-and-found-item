@@ -9,14 +9,13 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.ReturnItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.ReturnItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
-import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
-
 import java.util.List;
 
 import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.RETURN_ITEM_NOT_FOUND;
@@ -28,17 +27,17 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class ReturnItemResource {
 
   private final ReturnItemService returnItemService;
-  private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemService lostItemService;
   private LostItemBelongChecker belongChecker;
   private AuthService authService;
 
   @Autowired
   public ReturnItemResource(ReturnItemService returnItemService,
-                            LostItemServiceImpl lostItemServiceImpl,
+                            LostItemService lostItemService,
                             LostItemBelongChecker belongChecker,
                             AuthService authService) {
     this.returnItemService = returnItemService;
-    this.lostItemServiceImpl = lostItemServiceImpl;
+    this.lostItemService = lostItemService;
     this.belongChecker = belongChecker;
     this.authService = authService;
   }
@@ -89,7 +88,7 @@ public class ReturnItemResource {
     if (userRole != UserRole.RESOURCE_OWNER) {
       throw new UnauthorizedException();
     }
-    if (lostItemServiceImpl.isClosed(lostItemId)) {
+    if (lostItemService.isClosed(lostItemId)) {
       throw new UpdateItemException("lost item closed");
     }
     return returnItemService.create(returnItemOwner, lostItemId, creator);
@@ -109,7 +108,7 @@ public class ReturnItemResource {
     if (!authService.checkAction(userRole, action)) {
       throw new UnauthorizedException(action.getValue());
     }
-    if (lostItemServiceImpl.isClosed(superResourceId)) {
+    if (lostItemService.isClosed(superResourceId)) {
       throw new UpdateItemException("lost item closed");
     }
     return returnItemService.delete(resourceOwner, superResourceId, action);

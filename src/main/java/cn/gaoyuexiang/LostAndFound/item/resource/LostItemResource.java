@@ -8,6 +8,7 @@ import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemCreator;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.LostItemPageItem;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
@@ -26,13 +27,13 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class LostItemResource {
 
-  private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemService lostItemServiceImpl;
   private LostItemBelongChecker belongChecker;
   private UserService userService;
   private AuthService authService;
 
   @Autowired
-  public LostItemResource(LostItemServiceImpl lostItemServiceImpl,
+  public LostItemResource(LostItemService lostItemServiceImpl,
                           LostItemBelongChecker belongChecker,
                           UserService userService,
                           AuthService authService) {

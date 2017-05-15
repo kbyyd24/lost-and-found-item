@@ -6,8 +6,8 @@ import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 import cn.gaoyuexiang.LostAndFound.item.service.AuthService;
+import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemBelongChecker;
-import cn.gaoyuexiang.LostAndFound.item.service.impl.LostItemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,13 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.ws.rs.NotFoundException;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.eq;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -38,7 +41,7 @@ public class LostItemResourceTestForDelete {
   private AuthService authService;
 
   @MockBean
-  private LostItemServiceImpl lostItemServiceImpl;
+  private LostItemService lostItemService;
 
   @MockBean
   private LostItemBelongChecker belongChecker;
@@ -66,7 +69,7 @@ public class LostItemResourceTestForDelete {
     LostItem lostItem = new LostItem();
     given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
-    given(lostItemServiceImpl.close(eq(id))).willReturn(lostItem);
+    given(lostItemService.close(eq(id))).willReturn(lostItem);
     ResponseEntity<LostItem> entity =
         restTemplate.exchange(path, DELETE, requestEntity, LostItem.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
@@ -95,7 +98,7 @@ public class LostItemResourceTestForDelete {
   public void should_response_403_when_throw_CloseItemException() throws Exception {
     given(authService.checkUserRole(eq(id), eq(username), eq(token), eq(belongChecker)))
         .willReturn(UserRole.SUPER_RESOURCE_OWNER);
-    given(lostItemServiceImpl.close(eq(id))).willThrow(new CloseItemException(""));
+    given(lostItemService.close(eq(id))).willThrow(new CloseItemException(""));
     ResponseEntity<Message> entity =
         restTemplate.exchange(path, DELETE, requestEntity, Message.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.FORBIDDEN));

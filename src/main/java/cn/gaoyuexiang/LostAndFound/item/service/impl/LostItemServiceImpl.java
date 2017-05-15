@@ -27,7 +27,7 @@ import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NO
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
-public class LostItemServiceImpl implements LostItemService, BelongChecker {
+public class LostItemServiceImpl implements LostItemService {
 
   private final LostItemRepo lostItemRepo;
   private final IdCreateService idCreateService;
@@ -136,16 +136,6 @@ public class LostItemServiceImpl implements LostItemService, BelongChecker {
     }
     updateExistItem(updater, existItem);
     return lostItemRepo.save(existItem);
-  }
-
-  @Override
-  @Deprecated
-  public boolean isBelong(long itemId, String username) {
-    LostItem lostItem = lostItemRepo.findById(itemId);
-    if (lostItem == null) {
-      throw new NotFoundException(LOST_ITEM_NOT_EXIST.getReason());
-    }
-    return lostItem.getOwner().equals(username);
   }
 
   @Override
