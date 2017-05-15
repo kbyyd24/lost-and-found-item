@@ -21,6 +21,4 @@ public interface FoundItemService {
 
   FoundItem update(FoundItemCreator updater, long itemId, String updateUser);
 
-  boolean isClosed(long itemId);
-
 }
