@@ -17,8 +17,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.NotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.CLAIM_ITEM_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -29,6 +33,8 @@ public class ClaimItemServiceImpl implements ClaimItemService {
   private IdCreateService idCreateService;
   private TimeService timeService;
 
+  private Map<ActionType, ItemState> actionStateMap;
+
   @Autowired
   public ClaimItemServiceImpl(ClaimItemRepo claimItemRepo,
                               IdCreateService idCreateService,
@@ -36,6 +42,14 @@ public class ClaimItemServiceImpl implements ClaimItemService {
     this.claimItemRepo = claimItemRepo;
     this.idCreateService = idCreateService;
     this.timeService = timeService;
+    buildActionStateMap();
+  }
+
+  private void buildActionStateMap() {
+    this.actionStateMap = new HashMap<>(4);
+    actionStateMap.put(ActionType.ACCEPT, ItemState.ACCEPTED);
+    actionStateMap.put(ActionType.CANCEL, ItemState.CANCELED);
+    actionStateMap.put(ActionType.REJECT, ItemState.REJECTED);
   }
 
   @Override
@@ -74,7 +88,15 @@ public class ClaimItemServiceImpl implements ClaimItemService {
 
   @Override
   public ClaimItem delete(long foundItemId, String claimUser, ActionType action) {
-    return null;
+    ClaimItem claimItem = claimItemRepo.findByClaimUserAndFoundItemId(claimUser, foundItemId);
+    if (claimItem == null) {
+      throw new NotFoundException(CLAIM_ITEM_NOT_FOUND.getReason());
+    }
+    if (!claimItem.getState().equals(ItemState.UNREAD.getValue())) {
+      throw new UpdateItemException("item state is " + claimItem.getState());
+    }
+    claimItem.setState(actionStateMap.get(action).getValue());
+    return claimItemRepo.save(claimItem);
   }
 
   private void checkCompletion(ClaimItemCreator creator) {
