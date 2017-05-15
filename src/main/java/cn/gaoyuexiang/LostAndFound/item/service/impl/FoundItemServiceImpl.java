@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
-public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
+public class FoundItemServiceImpl implements FoundItemService {
 
   private FoundItemRepo foundItemRepo;
   private TimeService timeService;
@@ -80,16 +80,6 @@ public class FoundItemServiceImpl implements FoundItemService, BelongChecker {
     }
     updateItem(updater, existItem);
     return foundItemRepo.save(existItem);
-  }
-
-  @Override
-  @Deprecated
-  public boolean isBelong(long itemId, String username) {
-    FoundItem foundItem = foundItemRepo.findById(itemId);
-    if (foundItem == null) {
-      throw new NotFoundException(FOUND_ITEM_NOT_FOUND.getReason());
-    }
-    return foundItem.getOwner().equals(username);
   }
 
   private boolean isComplete(FoundItemCreator creator) {
