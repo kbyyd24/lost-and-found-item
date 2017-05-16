@@ -10,7 +10,7 @@ public class ReturnItem {
   private long id;
 
   private String returnUser;
-  private long applyTime;
+  private long createTime;
   @Column(length = 1024)
   private String reason;
   @Column(length = 32)
@@ -29,7 +29,7 @@ public class ReturnItem {
     ReturnItem that = (ReturnItem) o;
 
     if (getId() != that.getId()) return false;
-    if (getApplyTime() != that.getApplyTime()) return false;
+    if (getCreateTime() != that.getCreateTime()) return false;
     if (getLostItemId() != that.getLostItemId()) return false;
     if (getReturnUser() != null ? !getReturnUser().equals(that.getReturnUser()) : that.getReturnUser() != null)
       return false;
@@ -42,7 +42,7 @@ public class ReturnItem {
   public int hashCode() {
     int result = (int) (getId() ^ (getId() >>> 32));
     result = 31 * result + (getReturnUser() != null ? getReturnUser().hashCode() : 0);
-    result = 31 * result + (int) (getApplyTime() ^ (getApplyTime() >>> 32));
+    result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
     result = 31 * result + (getReason() != null ? getReason().hashCode() : 0);
     result = 31 * result + (getContact() != null ? getContact().hashCode() : 0);
     result = 31 * result + (getState() != null ? getState().hashCode() : 0);
@@ -66,12 +66,12 @@ public class ReturnItem {
     this.returnUser = returnUser;
   }
 
-  public long getApplyTime() {
-    return applyTime;
+  public long getCreateTime() {
+    return createTime;
   }
 
-  public void setApplyTime(long applyTime) {
-    this.applyTime = applyTime;
+  public void setCreateTime(long createTime) {
+    this.createTime = createTime;
   }
 
   public String getReason() {

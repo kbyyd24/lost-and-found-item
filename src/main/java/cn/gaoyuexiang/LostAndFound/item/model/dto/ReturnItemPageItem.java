@@ -12,7 +12,7 @@ public class ReturnItemPageItem {
 
   public ReturnItemPageItem(ReturnItem returnItem) {
     this.returnUser = returnItem.getReturnUser();
-    this.applyTime = returnItem.getApplyTime();
+    this.applyTime = returnItem.getCreateTime();
     this.state = returnItem.getState();
   }
 

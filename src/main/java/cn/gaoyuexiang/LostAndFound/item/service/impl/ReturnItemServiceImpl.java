@@ -14,9 +14,11 @@ import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +61,16 @@ public class ReturnItemServiceImpl implements ReturnItemService {
                                                          int page,
                                                          int listSize,
                                                          ItemSort sort) {
-    String columnName = sort.getColumnName();
-    PageRequest pageRequest = new PageRequest(page - 1, listSize, DESC, columnName);
-    List<ReturnItem> returnItems = returnItemRepo.findAllByLostItemId(itemId, pageRequest);
-    return returnItems.stream()
-        .map(ReturnItemPageItem::new)
-        .collect(toList());
+    try {
+      String columnName = sort.getColumnName();
+      PageRequest pageRequest = new PageRequest(page - 1, listSize, DESC, columnName);
+      List<ReturnItem> returnItems = returnItemRepo.findAllByLostItemId(itemId, pageRequest);
+      return returnItems.stream()
+          .map(ReturnItemPageItem::new)
+          .collect(toList());
+    } catch (PropertyReferenceException pre) {
+      return Collections.emptyList();
+    }
   }
 
   @Override
@@ -110,7 +116,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     existItem = new ReturnItem();
     existItem.setId(idCreateService.create(latestId));
     existItem.setReturnUser(username);
-    existItem.setApplyTime(timeService.getCurrentTime());
+    existItem.setCreateTime(timeService.getCurrentTime());
     existItem.setReason(creator.getReason());
     existItem.setContact(creator.getContact());
     existItem.setState(ItemState.UNREAD.getValue());

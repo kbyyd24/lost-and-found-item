@@ -20,6 +20,6 @@ public interface ReturnItemRepo extends PagingAndSortingRepository<ReturnItem, L
 
   ReturnItem findByLostItemIdAndState(long lostItemId, String state);
 
-  @Query("select returnItem.id from ReturnItem returnItem order by returnItem.applyTime desc")
+  @Query("select returnItem.id from ReturnItem returnItem order by returnItem.createTime desc")
   List<Long> findLatestId();
 }
