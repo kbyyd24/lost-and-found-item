@@ -50,9 +50,15 @@ public class LostItemServiceImpl implements LostItemService {
     if (!isComplete(lostItemCreator)) {
       throw new MissPropertyException();
     }
-    Long baseId = lostItemRepo.findLatestId();
+    PageRequest firstResult = new PageRequest(0, 1);
+    Long baseId = findLatestId(firstResult);
     LostItem lostItem = buildItem(lostItemCreator, createUser, baseId);
     return lostItemRepo.save(lostItem);
+  }
+
+  private Long findLatestId(PageRequest firstResult) {
+    List<Long> ids = lostItemRepo.findLatestId(firstResult);
+    return ids.size() == 0 ? 0L : ids.get(0);
   }
 
   private boolean isComplete(LostItemCreator creator) {

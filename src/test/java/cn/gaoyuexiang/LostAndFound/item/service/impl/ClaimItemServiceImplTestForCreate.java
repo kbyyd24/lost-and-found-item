@@ -17,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -60,7 +62,7 @@ public class ClaimItemServiceImplTestForCreate {
     Long time = 1234L;
     when(claimItemRepo.findByClaimUserAndFoundItemId(createUser, foundItemId))
         .thenReturn(null);
-    when(claimItemRepo.findLatestId()).thenReturn(latestId);
+    when(claimItemRepo.findLatestId()).thenReturn(Collections.singletonList(latestId));
     when(idCreateService.create(latestId)).thenReturn(id);
     when(timeService.getCurrentTime()).thenReturn(time);
     when(claimItemRepo.save(any(ClaimItem.class))).thenReturn(expectItem);

@@ -54,7 +54,7 @@ public class FoundItemServiceImplTestForCreate {
     long baseId = 1L;
     long createTime = 1L;
     FoundItem foundItem = new FoundItem();
-    when(foundItemRepo.findLatestId()).thenReturn(baseId);
+    when(foundItemRepo.findLatestId()).thenReturn(Collections.singletonList(baseId));
     when(idCreateService.create(baseId)).thenReturn(baseId);
     when(timeService.getCurrentTime()).thenReturn(createTime);
     when(foundItemRepo.save(any(FoundItem.class))).thenReturn(foundItem);

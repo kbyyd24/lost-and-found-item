@@ -17,5 +17,5 @@ public interface FoundItemRepo extends PagingAndSortingRepository<FoundItem, Lon
   FoundItem findByIdAndOwner(long id, String owner);
 
   @Query("select foundItem.id from FoundItem foundItem order by foundItem.createTime desc")
-  Long findLatestId();
+  List<Long> findLatestId();
 }

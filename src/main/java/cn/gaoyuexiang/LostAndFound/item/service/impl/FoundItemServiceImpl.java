@@ -92,7 +92,7 @@ public class FoundItemServiceImpl implements FoundItemService {
   }
 
   private FoundItem buildItem(FoundItemCreator creator, String createUser) {
-    Long latestId = foundItemRepo.findLatestId();
+    Long latestId = findLatestId();
     FoundItem foundItem = new FoundItem();
     foundItem.setId(idCreateService.create(latestId));
     foundItem.setOwner(createUser);
@@ -104,6 +104,11 @@ public class FoundItemServiceImpl implements FoundItemService {
     foundItem.setPictures(creator.getPictures());
     foundItem.setState(ItemState.ENABLE.getValue());
     return foundItem;
+  }
+
+  private Long findLatestId() {
+    List<Long> ids = foundItemRepo.findLatestId();
+    return ids.isEmpty() ? 0L : ids.get(0);
   }
 
   private FoundItemPageItem buildPageItem(FoundItem foundItem) {

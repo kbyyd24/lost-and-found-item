@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -57,7 +59,7 @@ public class ReturnItemServiceImplTestForCreate {
     ReturnItem expectItem = new ReturnItem();
     when(returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId))
         .thenReturn(null);
-    when(returnItemRepo.findLatestId()).thenReturn(baseId);
+    when(returnItemRepo.findLatestId()).thenReturn(Collections.singletonList(baseId));
     when(idCreateService.create(baseId)).thenReturn(baseId);
     when(timeService.getCurrentTime()).thenReturn(time);
     when(returnItemRepo.save(any(ReturnItem.class))).thenReturn(expectItem);

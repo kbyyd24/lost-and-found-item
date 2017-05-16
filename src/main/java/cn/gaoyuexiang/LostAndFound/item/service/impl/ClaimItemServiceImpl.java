@@ -111,11 +111,16 @@ public class ClaimItemServiceImpl implements ClaimItemService {
   }
 
   private ClaimItem buildClaimItem(long foundItemId, String createUser, ClaimItemCreator creator) {
-    Long latestId = claimItemRepo.findLatestId();
+    Long latestId = findLatestId();
     long newId = idCreateService.create(latestId);
     long createTime = timeService.getCurrentTime();
     return new ClaimItem(newId, createUser, createTime, creator.getReason(),
         creator.getContact(), ItemState.UNREAD.getValue(), foundItemId);
+  }
+
+  private Long findLatestId() {
+    List<Long> ids = claimItemRepo.findLatestId();
+    return ids.get(0);
   }
 
   private ClaimItemPageItem buildClaimItemPageItem(ClaimItem claimItem) {

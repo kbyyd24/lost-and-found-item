@@ -14,9 +14,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -67,7 +69,7 @@ public class LostItemServiceImplTestForCreate {
     Long id = 0L;
     Long time = 123L;
     LostItem expectItem = new LostItem();
-    when(lostItemRepo.findLatestId()).thenReturn(id);
+    when(lostItemRepo.findLatestId(any(PageRequest.class))).thenReturn(Collections.singletonList(id));
     when(idCreateService.create(id)).thenReturn(id);
     when(timeService.getCurrentTime()).thenReturn(time);
     when(lostItemRepo.save(any(LostItem.class))).thenReturn(expectItem);
