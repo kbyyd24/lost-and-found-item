@@ -104,6 +104,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
   private void updateItem(ReturnItemCreator creator, ReturnItem existItem) {
     existItem.setReason(creator.getReason());
     existItem.setContact(creator.getContact());
+    existItem.setState(ItemState.UNREAD.getValue());
   }
 
   private ReturnItem buildNewItem(String username, long lostItemId, ReturnItemCreator creator) {

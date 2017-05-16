@@ -94,9 +94,9 @@ public class ClaimItemServiceImplTestForCreate {
   }
 
   @Test(expected = UpdateItemException.class)
-  public void should_throw_UpdateItemException_when_exist_item_state_not_unread() throws Exception {
+  public void should_throw_UpdateItemException_when_exist_item_state_is_accepted() throws Exception {
     ClaimItem closedItem = new ClaimItem();
-    closedItem.setState(ItemState.CLOSED.getValue());
+    closedItem.setState(ItemState.ACCEPTED.getValue());
     when(claimItemRepo.findByClaimUserAndFoundItemId(createUser, foundItemId))
         .thenReturn(closedItem);
     claimItemService.create(foundItemId, createUser, creator);

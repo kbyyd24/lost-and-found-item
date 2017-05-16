@@ -78,8 +78,8 @@ public class ClaimItemServiceImpl implements ClaimItemService {
     ClaimItem existItem = claimItemRepo.findByClaimUserAndFoundItemId(createUser, foundItemId);
     if (existItem == null) {
       existItem = buildClaimItem(foundItemId, createUser, creator);
-    } else if (existItem.getState().equals(ItemState.CLOSED.getValue())) {
-      throw new UpdateItemException("item closed");
+    } else if (existItem.getState().equals(ItemState.ACCEPTED.getValue())) {
+      throw new UpdateItemException("item accepted");
     } else {
       updateClaimItem(creator, existItem);
     }
@@ -108,6 +108,7 @@ public class ClaimItemServiceImpl implements ClaimItemService {
   private void updateClaimItem(ClaimItemCreator creator, ClaimItem existItem) {
     existItem.setContact(creator.getContact());
     existItem.setReason(creator.getReason());
+    existItem.setState(ItemState.UNREAD.getValue());
   }
 
   private ClaimItem buildClaimItem(long foundItemId, String createUser, ClaimItemCreator creator) {
