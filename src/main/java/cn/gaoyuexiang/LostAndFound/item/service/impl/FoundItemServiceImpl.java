@@ -51,7 +51,7 @@ public class FoundItemServiceImpl implements FoundItemService {
 
   @Override
   public List<FoundItemPageItem> loadPage(int page, int size, ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, size, DESC, sort.getColumnName());
+    PageRequest pageRequest = new PageRequest(page - 1, size, DESC, sort.getColumnName());
     List<FoundItem> items = foundItemRepo.findAll(pageRequest).getContent();
     return items.stream()
         .map(this::buildPageItem)

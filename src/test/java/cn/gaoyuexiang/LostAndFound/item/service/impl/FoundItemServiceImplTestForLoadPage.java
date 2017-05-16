@@ -46,7 +46,7 @@ public class FoundItemServiceImplTestForLoadPage {
     page = 1;
     size = 8;
     sort = ItemSort.CREATE_TIME;
-    requestPage = new PageRequest(page, size, DESC, sort.getColumnName());
+    requestPage = new PageRequest(page - 1, size, DESC, sort.getColumnName());
   }
 
   @Test
