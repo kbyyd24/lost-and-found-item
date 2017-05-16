@@ -22,6 +22,6 @@ public class RandomIncreasedIdCreateService implements IdCreateService {
   public long create(Long base) {
     return base == null || base < initialBase ?
         initialBase :
-        base + Double.doubleToLongBits(Math.random() * increaseStep);
+        base + new Double(Math.random() * increaseStep).longValue();
   }
 }
