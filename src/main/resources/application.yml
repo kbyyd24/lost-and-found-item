@@ -4,5 +4,7 @@ lost-and-found:
     initialBase: 1000
   user:
     host: localhost
-    port: 4000
+    port: 8080
     checkStateURI: /user/login/username
+server:
+  port: 4000

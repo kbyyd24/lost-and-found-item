@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "found_item")
+@Table(name = "foundItem")
 public class FoundItem {
 
   @Id
@@ -13,15 +13,13 @@ public class FoundItem {
   private String title;
   private String owner;
   private String itemName;
-  @Column(name = "create_time")
   private long createTime;
-  @Column(name = "found_time")
   private long foundTime;
   private String description;
   private String state;
 
   @ElementCollection
-  @CollectionTable(name = "found_picture")
+  @CollectionTable(name = "foundPicture")
   private List<String> pictures;
 
   public FoundItem() {}

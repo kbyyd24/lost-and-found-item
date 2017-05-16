@@ -46,7 +46,7 @@ public class FoundItemResource {
   @GET
   public List<FoundItemPageItem> loadPage(@QueryParam("page") @DefaultValue("1") int page,
                                           @QueryParam("listSize") @DefaultValue("8") int size,
-                                          @QueryParam("sort") @DefaultValue("create_time") String sortName) {
+                                          @QueryParam("sort") @DefaultValue("createTime") String sortName) {
     ItemSort sort = ItemSort.getItemSortByColumnName(sortName);
     List<FoundItemPageItem> foundItemPageItems = foundItemService.loadPage(page, size, sort);
     if (foundItemPageItems.isEmpty()) {

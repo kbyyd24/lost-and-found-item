@@ -3,22 +3,19 @@ package cn.gaoyuexiang.LostAndFound.item.model.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "return_item")
+@Table(name = "returnItem")
 public class ReturnItem {
 
   @Id
   private long id;
 
-  @Column(name = "return_user")
   private String returnUser;
-  @Column(name = "apply_time")
   private long applyTime;
   @Column(length = 1024)
   private String reason;
   @Column(length = 32)
   private String contact;
   private String state;
-  @Column(name = "lost_item_id")
   private long lostItemId;
 
   public ReturnItem() {

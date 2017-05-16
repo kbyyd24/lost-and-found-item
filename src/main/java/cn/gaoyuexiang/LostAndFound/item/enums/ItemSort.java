@@ -4,10 +4,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum ItemSort {
-  END_TIME("end_time"),
-  BEGIN_TIME("begin_time"),
-  CREATE_TIME("create_time"),
-  FOUND_TIME("found_time");
+  END_TIME("endTime"),
+  BEGIN_TIME("beginTime"),
+  CREATE_TIME("createTime"),
+  FOUND_TIME("foundTime");
 
   private String columnName;
 

@@ -6,22 +6,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "claim_item")
+@Table(name = "claimItem")
 public class ClaimItem {
 
   @Id
   private long id;
 
-  @Column(name = "claim_user")
   private String claimUser;
-  @Column(name = "apply_time")
   private long applyTime;
   @Column(length = 1024)
   private String reason;
   @Column(length = 1024)
   private String contact;
   private String state;
-  @Column(name = "found_item_id")
   private long foundItemId;
 
   public ClaimItem() {}

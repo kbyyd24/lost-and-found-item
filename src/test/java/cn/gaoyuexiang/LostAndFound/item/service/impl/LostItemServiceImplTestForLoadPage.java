@@ -38,19 +38,19 @@ public class LostItemServiceImplTestForLoadPage {
 
   @Test
   public void should_load_page_when_sort_is_create_time() throws Exception {
-    String orderBy = "create_time";
+    String orderBy = "createTime";
     check(orderBy, ItemSort.CREATE_TIME);
   }
 
   @Test
   public void should_load_page_when_sort_is_end_time() throws Exception {
-    String orderBy = "end_time";
+    String orderBy = "endTime";
     check(orderBy, ItemSort.END_TIME);
   }
 
   @Test
   public void should_load_page_when_sort_is_begin_time() throws Exception {
-    String orderBy = "begin_time";
+    String orderBy = "beginTime";
     check(orderBy, ItemSort.BEGIN_TIME);
   }
 

@@ -46,7 +46,7 @@ public class LostItemResource {
   @GET
   public List<LostItemPageItem> loadLostItemList(@QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("listSize") @DefaultValue("8") int listSize,
-                                   @QueryParam("sort") @DefaultValue("create_time") String sort) {
+                                   @QueryParam("sort") @DefaultValue("createTime") String sort) {
     ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
     List<LostItemPageItem> lostItemPageItems = lostItemServiceImpl.loadPage(page, listSize, itemSort);
     if (lostItemPageItems.size() == 0) {
