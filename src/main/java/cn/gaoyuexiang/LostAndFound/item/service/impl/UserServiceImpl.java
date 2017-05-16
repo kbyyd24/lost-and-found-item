@@ -2,6 +2,7 @@ package cn.gaoyuexiang.LostAndFound.item.service.impl;
 
 import cn.gaoyuexiang.LostAndFound.item.config.UserServiceProperties;
 import cn.gaoyuexiang.LostAndFound.item.enums.UserState;
+import cn.gaoyuexiang.LostAndFound.item.exception.UnauthorizedException;
 import cn.gaoyuexiang.LostAndFound.item.model.dto.Message;
 import cn.gaoyuexiang.LostAndFound.item.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserState checkState(String username, String userToken) {
+    checkParams(username, userToken);
     String URI = checkStateURI.replace("username", username);
     String URL_FORMAT = "http://%s:%s%s";
     String path = String.format(URL_FORMAT, host, port, URI);
@@ -53,5 +55,11 @@ public class UserServiceImpl implements UserService {
     ResponseEntity<Message> response =
         restTemplate.exchange(path, GET, requestEntity, Message.class);
     return stateMap.get(response.getStatusCode());
+  }
+
+  private void checkParams(String username, String userToken) {
+    if (username == null || userToken == null) {
+      throw new UnauthorizedException();
+    }
   }
 }
