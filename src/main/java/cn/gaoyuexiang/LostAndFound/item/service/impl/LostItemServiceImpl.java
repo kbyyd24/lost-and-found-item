@@ -91,7 +91,7 @@ public class LostItemServiceImpl implements LostItemService {
 
   @Override
   public List<LostItemPageItem> loadPage(int page, int listSize, ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, listSize, DESC, sort.getColumnName());
+    PageRequest pageRequest = new PageRequest(page - 1, listSize, DESC, sort.getColumnName());
     List<LostItem> lostItems = lostItemRepo.findAll(pageRequest).getContent();
     return lostItems.stream()
         .map(LostItemPageItem::new)

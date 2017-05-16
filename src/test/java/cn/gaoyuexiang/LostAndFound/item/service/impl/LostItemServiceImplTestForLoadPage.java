@@ -58,7 +58,7 @@ public class LostItemServiceImplTestForLoadPage {
   private void check(String orderBy, ItemSort orderByArg) {
     int page = 1;
     int listSize = 8;
-    PageRequest pageRequest = new PageRequest(page, listSize, DESC, orderBy);
+    PageRequest pageRequest = new PageRequest(page - 1, listSize, DESC, orderBy);
     LostItem lostItem = new LostItem();
     Page mockPage = mock(Page.class);
     when(mockPage.getContent()).thenReturn(Collections.singletonList(lostItem));
