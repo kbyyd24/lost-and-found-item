@@ -121,7 +121,7 @@ public class ClaimItemServiceImpl implements ClaimItemService {
 
   private Long findLatestId() {
     List<Long> ids = claimItemRepo.findLatestId();
-    return ids.get(0);
+    return ids.isEmpty() ? 0L : ids.get(0);
   }
 
   private ClaimItemPageItem buildClaimItemPageItem(ClaimItem claimItem) {
