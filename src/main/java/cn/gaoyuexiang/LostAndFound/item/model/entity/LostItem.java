@@ -20,7 +20,7 @@ public class LostItem {
   private String description;
   private String state;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "lostPicture")
   private List<String> pictures;
 
