@@ -48,7 +48,7 @@ public class ClaimItemServiceImplTestForLoadPage {
     page = 1;
     size = 8;
     sort = ItemSort.CREATE_TIME;
-    pageRequest = new PageRequest(page, size, DESC, sort.getColumnName());
+    pageRequest = new PageRequest(page - 1, size, DESC, sort.getColumnName());
   }
 
   @Test

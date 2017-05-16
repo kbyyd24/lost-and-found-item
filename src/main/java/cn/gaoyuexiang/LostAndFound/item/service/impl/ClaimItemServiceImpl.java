@@ -59,7 +59,7 @@ public class ClaimItemServiceImpl implements ClaimItemService {
 
   @Override
   public List<ClaimItemPageItem> loadPage(long foundItemId, int page, int size, ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, size, DESC, sort.getColumnName());
+    PageRequest pageRequest = new PageRequest(page - 1, size, DESC, sort.getColumnName());
     List<ClaimItem> claimItems =
         claimItemRepo.findAllByFoundItemId(foundItemId, pageRequest).getContent();
     return claimItems.stream()
