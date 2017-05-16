@@ -18,7 +18,7 @@ public class FoundItem {
   private String description;
   private String state;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "foundPicture")
   private List<String> pictures;
 
