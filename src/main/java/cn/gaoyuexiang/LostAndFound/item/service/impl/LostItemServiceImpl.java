@@ -85,6 +85,7 @@ public class LostItemServiceImpl implements LostItemService {
     lostItem.setEndTime(creator.getEndTime());
     lostItem.setDescription(creator.getDescription());
     lostItem.setPictures(creator.getPictures());
+    lostItem.setState(ItemState.ENABLE.getValue());
     return lostItem;
   }
 
