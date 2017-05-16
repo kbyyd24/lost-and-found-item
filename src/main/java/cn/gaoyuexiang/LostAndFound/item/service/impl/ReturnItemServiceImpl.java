@@ -80,8 +80,8 @@ public class ReturnItemServiceImpl implements ReturnItemService {
     ReturnItem existItem = returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId);
     if (existItem == null) {
       existItem = buildNewItem(username, lostItemId, creator);
-    } else if (existItem.getState().equals(ItemState.CLOSED.getValue())) {
-      throw new UpdateItemException("item closed");
+    } else if (existItem.getState().equals(ItemState.ACCEPTED.getValue())) {
+      throw new UpdateItemException("item accepted");
     } else {
       updateItem(creator, existItem);
     }

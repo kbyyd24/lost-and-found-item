@@ -85,9 +85,9 @@ public class ReturnItemServiceImplTestForCreate {
   }
 
   @Test(expected = UpdateItemException.class)
-  public void should_throw_UpdateItemException_when_item_state_is_closed() throws Exception {
+  public void should_throw_UpdateItemException_when_item_state_is_accepted() throws Exception {
     ReturnItem closedItem = new ReturnItem();
-    closedItem.setState(ItemState.CLOSED.getValue());
+    closedItem.setState(ItemState.ACCEPTED.getValue());
     when(returnItemRepo.findByReturnUserAndLostItemId(username, lostItemId))
         .thenReturn(closedItem);
     returnItemService.create(username, lostItemId, creator);
