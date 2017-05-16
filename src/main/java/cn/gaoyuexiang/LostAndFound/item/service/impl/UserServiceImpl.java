@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -39,7 +40,6 @@ public class UserServiceImpl implements UserService {
   private void initStateMap() {
     this.stateMap = new HashMap<>(4);
     this.stateMap.put(HttpStatus.OK, UserState.ONLINE);
-    this.stateMap.put(HttpStatus.UNAUTHORIZED, UserState.UNAUTHORIZED);
     this.stateMap.put(HttpStatus.NOT_FOUND, UserState.OFFLINE);
   }
 
@@ -52,9 +52,13 @@ public class UserServiceImpl implements UserService {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("user-token", userToken);
     HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
-    ResponseEntity<Message> response =
-        restTemplate.exchange(path, GET, requestEntity, Message.class);
-    return stateMap.get(response.getStatusCode());
+    try {
+      ResponseEntity<Message> response =
+          restTemplate.exchange(path, GET, requestEntity, Message.class);
+      return stateMap.get(response.getStatusCode());
+    } catch (HttpClientErrorException unauthorizedException) {
+      return UserState.UNAUTHORIZED;
+    }
   }
 
   private void checkParams(String username, String userToken) {
