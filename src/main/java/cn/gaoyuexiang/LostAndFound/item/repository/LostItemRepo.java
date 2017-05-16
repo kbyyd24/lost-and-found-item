@@ -15,6 +15,6 @@ public interface LostItemRepo extends PagingAndSortingRepository<LostItem, Long>
   LostItem findById(long id);
 
   @Query("select lostItem.id from LostItem lostItem order by lostItem.createTime desc")
-  long findLatestId();
+  Long findLatestId();
 
 }

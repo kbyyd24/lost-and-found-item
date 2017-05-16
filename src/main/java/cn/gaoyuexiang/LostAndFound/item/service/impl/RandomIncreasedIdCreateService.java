@@ -19,8 +19,8 @@ public class RandomIncreasedIdCreateService implements IdCreateService {
   }
 
   @Override
-  public long create(long base) {
-    return base < initialBase ?
+  public long create(Long base) {
+    return base == null || base < initialBase ?
         initialBase :
         base + Double.doubleToLongBits(Math.random() * increaseStep);
   }

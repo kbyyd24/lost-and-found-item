@@ -20,5 +20,5 @@ public interface ClaimItemRepo extends PagingAndSortingRepository<ClaimItem, Lon
   ClaimItem findByFoundItemIdAndState(long foundItemId, String state);
 
   @Query("select claimItem.id from ClaimItem claimItem order by claimItem.id desc")
-  long findLatestId();
+  Long findLatestId();
 }

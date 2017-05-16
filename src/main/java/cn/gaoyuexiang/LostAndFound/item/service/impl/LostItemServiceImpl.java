@@ -50,7 +50,7 @@ public class LostItemServiceImpl implements LostItemService {
     if (!isComplete(lostItemCreator)) {
       throw new MissPropertyException();
     }
-    long baseId = lostItemRepo.findLatestId();
+    Long baseId = lostItemRepo.findLatestId();
     LostItem lostItem = buildItem(lostItemCreator, createUser, baseId);
     return lostItemRepo.save(lostItem);
   }
@@ -74,7 +74,7 @@ public class LostItemServiceImpl implements LostItemService {
     return true;
   }
 
-  private LostItem buildItem(LostItemCreator creator, String user, long baseId) {
+  private LostItem buildItem(LostItemCreator creator, String user, Long baseId) {
     LostItem lostItem = new LostItem();
     lostItem.setId(idCreateService.create(baseId));
     lostItem.setTitle(creator.getTitle());

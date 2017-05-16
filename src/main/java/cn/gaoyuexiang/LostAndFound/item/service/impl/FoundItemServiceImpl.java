@@ -92,7 +92,7 @@ public class FoundItemServiceImpl implements FoundItemService {
   }
 
   private FoundItem buildItem(FoundItemCreator creator, String createUser) {
-    long latestId = foundItemRepo.findLatestId();
+    Long latestId = foundItemRepo.findLatestId();
     FoundItem foundItem = new FoundItem();
     foundItem.setId(idCreateService.create(latestId));
     foundItem.setOwner(createUser);

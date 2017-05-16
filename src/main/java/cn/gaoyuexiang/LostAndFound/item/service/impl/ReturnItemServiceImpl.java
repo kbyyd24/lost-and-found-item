@@ -105,7 +105,7 @@ public class ReturnItemServiceImpl implements ReturnItemService {
 
   private ReturnItem buildNewItem(String username, long lostItemId, ReturnItemCreator creator) {
     ReturnItem existItem;
-    long latestId = returnItemRepo.findLatestId();
+    Long latestId = returnItemRepo.findLatestId();
     existItem = new ReturnItem();
     existItem.setId(idCreateService.create(latestId));
     existItem.setReturnUser(username);
