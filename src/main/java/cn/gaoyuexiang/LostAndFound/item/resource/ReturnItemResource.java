@@ -49,7 +49,7 @@ public class ReturnItemResource {
                              @HeaderParam("user-token") String userToken,
                              @QueryParam("page") @DefaultValue("1") int page,
                              @QueryParam("listSize") @DefaultValue("8") int listSize,
-                             @QueryParam("sort") @DefaultValue("create_time") String sort) {
+                             @QueryParam("sort") @DefaultValue("createTime") String sort) {
     if (authService.checkUserRole(lostItemId, username, userToken, belongChecker) == UserRole.NOT_OWNER) {
       throw new UnauthorizedException(UserRole.NOT_OWNER.name());
     }

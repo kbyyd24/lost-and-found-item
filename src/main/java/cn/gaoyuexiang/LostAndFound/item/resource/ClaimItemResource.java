@@ -48,7 +48,7 @@ public class ClaimItemResource {
                                           @HeaderParam("user-token") String userToken,
                                           @QueryParam("page") @DefaultValue("1") int page,
                                           @QueryParam("size") @DefaultValue("8") int size,
-                                          @QueryParam("sort") @DefaultValue("create_time")
+                                          @QueryParam("sort") @DefaultValue("createTime")
                                               String sortColumnName) {
     UserRole userRole = authService.checkUserRole(itemId, requestUser, userToken, belongChecker);
     if (userRole != UserRole.SUPER_RESOURCE_OWNER) {
