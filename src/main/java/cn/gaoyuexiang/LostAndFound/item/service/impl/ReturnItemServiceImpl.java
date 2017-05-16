@@ -59,7 +59,8 @@ public class ReturnItemServiceImpl implements ReturnItemService {
                                                          int page,
                                                          int listSize,
                                                          ItemSort sort) {
-    PageRequest pageRequest = new PageRequest(page, listSize, DESC, sort.getColumnName());
+    String columnName = sort.getColumnName();
+    PageRequest pageRequest = new PageRequest(page - 1, listSize, DESC, columnName);
     List<ReturnItem> returnItems = returnItemRepo.findAllByLostItemId(itemId, pageRequest);
     return returnItems.stream()
         .map(ReturnItemPageItem::new)

@@ -46,7 +46,7 @@ public class ReturnItemServiceImplTestForGetItems {
     page = 1;
     listSize = 8;
     sort = CREATE_TIME;
-    pageRequest = new PageRequest(page, listSize, DESC, "createTime");
+    pageRequest = new PageRequest(page - 1, listSize, DESC, "createTime");
   }
 
   @Test
