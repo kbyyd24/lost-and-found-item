@@ -13,7 +13,7 @@ public class ClaimItem {
   private long id;
 
   private String claimUser;
-  private long applyTime;
+  private long createTime;
   @Column(length = 1024)
   private String reason;
   @Column(length = 1024)
@@ -23,11 +23,11 @@ public class ClaimItem {
 
   public ClaimItem() {}
 
-  public ClaimItem(long id, String claimUser, long applyTime, String reason,
+  public ClaimItem(long id, String claimUser, long createTime, String reason,
                    String contact, String state, long foundItemId) {
     this.id = id;
     this.claimUser = claimUser;
-    this.applyTime = applyTime;
+    this.createTime = createTime;
     this.reason = reason;
     this.contact = contact;
     this.state = state;
@@ -42,7 +42,7 @@ public class ClaimItem {
     ClaimItem claimItem = (ClaimItem) o;
 
     if (getId() != claimItem.getId()) return false;
-    if (getApplyTime() != claimItem.getApplyTime()) return false;
+    if (getCreateTime() != claimItem.getCreateTime()) return false;
     if (getFoundItemId() != claimItem.getFoundItemId()) return false;
     if (getClaimUser() != null ? !getClaimUser().equals(claimItem.getClaimUser()) : claimItem.getClaimUser() != null)
       return false;
@@ -56,7 +56,7 @@ public class ClaimItem {
   public int hashCode() {
     int result = (int) (getId() ^ (getId() >>> 32));
     result = 31 * result + (getClaimUser() != null ? getClaimUser().hashCode() : 0);
-    result = 31 * result + (int) (getApplyTime() ^ (getApplyTime() >>> 32));
+    result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
     result = 31 * result + (getReason() != null ? getReason().hashCode() : 0);
     result = 31 * result + (getContact() != null ? getContact().hashCode() : 0);
     result = 31 * result + (getState() != null ? getState().hashCode() : 0);
@@ -80,12 +80,12 @@ public class ClaimItem {
     this.claimUser = claimUser;
   }
 
-  public long getApplyTime() {
-    return applyTime;
+  public long getCreateTime() {
+    return createTime;
   }
 
-  public void setApplyTime(long applyTime) {
-    this.applyTime = applyTime;
+  public void setCreateTime(long createTime) {
+    this.createTime = createTime;
   }
 
   public String getReason() {

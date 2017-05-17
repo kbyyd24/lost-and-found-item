@@ -14,7 +14,6 @@ import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
@@ -127,7 +126,7 @@ public class ClaimItemServiceImpl implements ClaimItemService {
   private ClaimItemPageItem buildClaimItemPageItem(ClaimItem claimItem) {
     ClaimItemPageItem pageItem = new ClaimItemPageItem();
     pageItem.setClaimUser(claimItem.getClaimUser());
-    pageItem.setApplyTime(claimItem.getApplyTime());
+    pageItem.setApplyTime(claimItem.getCreateTime());
     pageItem.setState(claimItem.getState());
     return pageItem;
   }
