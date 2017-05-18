@@ -48,11 +48,7 @@ public class LostItemResource {
                                    @QueryParam("listSize") @DefaultValue("8") int listSize,
                                    @QueryParam("sort") @DefaultValue("createTime") String sort) {
     ItemSort itemSort = ItemSort.getItemSortByColumnName(sort);
-    List<LostItemPageItem> lostItemPageItems = lostItemServiceImpl.loadPage(page, listSize, itemSort);
-    if (lostItemPageItems.size() == 0) {
-      throw new NotFoundException(PAGE_OUT_OF_BOUND.getReason());
-    }
-    return lostItemPageItems;
+    return lostItemServiceImpl.loadPage(page, listSize, itemSort);
   }
 
   @POST
