@@ -13,17 +13,14 @@ import cn.gaoyuexiang.LostAndFound.item.service.IdCreateService;
 import cn.gaoyuexiang.LostAndFound.item.service.LostItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.ReturnItemService;
 import cn.gaoyuexiang.LostAndFound.item.service.TimeService;
-import cn.gaoyuexiang.LostAndFound.item.service.BelongChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.gaoyuexiang.LostAndFound.item.enums.ItemState.CLOSED;
-import static cn.gaoyuexiang.LostAndFound.item.enums.NotFoundReason.LOST_ITEM_NOT_EXIST;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -68,9 +65,7 @@ public class LostItemServiceImpl implements LostItemService {
       return false;
     } else if (creator.getItemName() == null) {
       return false;
-    } else if (creator.getBeginTime() == 0L) {
-      return false;
-    } else if (creator.getEndTime() == 0L) {
+    } else if (creator.getLostTime() == 0L) {
       return false;
     } else if (creator.getDescription() == null) {
       return false;
@@ -85,8 +80,7 @@ public class LostItemServiceImpl implements LostItemService {
     lostItem.setOwner(user);
     lostItem.setItemName(creator.getItemName());
     lostItem.setCreateTime(timeService.getCurrentTime());
-    lostItem.setBeginTime(creator.getBeginTime());
-    lostItem.setEndTime(creator.getEndTime());
+    lostItem.setLostTime(creator.getLostTime());
     lostItem.setDescription(creator.getDescription());
     lostItem.setState(ItemState.ENABLE.getValue());
     return lostItem;
@@ -149,11 +143,8 @@ public class LostItemServiceImpl implements LostItemService {
     if (needUpdate(updater.getItemName(), existItem.getItemName())) {
       existItem.setItemName(updater.getItemName());
     }
-    if (needUpdate(updater.getBeginTime(), existItem.getBeginTime())) {
-      existItem.setBeginTime(updater.getBeginTime());
-    }
-    if (needUpdate(updater.getEndTime(), existItem.getEndTime())) {
-      existItem.setEndTime(updater.getEndTime());
+    if (needUpdate(updater.getLostTime(), existItem.getLostTime())) {
+      existItem.setLostTime(updater.getLostTime());
     }
     if (needUpdate(updater.getDescription(), existItem.getDescription())) {
       existItem.setDescription(updater.getDescription());

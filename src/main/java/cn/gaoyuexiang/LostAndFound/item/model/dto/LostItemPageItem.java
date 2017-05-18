@@ -2,8 +2,6 @@ package cn.gaoyuexiang.LostAndFound.item.model.dto;
 
 import cn.gaoyuexiang.LostAndFound.item.model.entity.LostItem;
 
-import java.util.List;
-
 public class LostItemPageItem {
 
   private long id;
@@ -11,7 +9,6 @@ public class LostItemPageItem {
   private String itemName;
   private long createTime;
   private long beginTime;
-  private long endTime;
 
   public LostItemPageItem() {}
 
@@ -20,8 +17,7 @@ public class LostItemPageItem {
     this.title = lostItem.getTitle();
     this.itemName = lostItem.getItemName();
     this.createTime = lostItem.getCreateTime();
-    this.beginTime = lostItem.getBeginTime();
-    this.endTime = lostItem.getEndTime();
+    this.beginTime = lostItem.getLostTime();
   }
 
   @Override
@@ -34,7 +30,6 @@ public class LostItemPageItem {
     if (getId() != that.getId()) return false;
     if (getCreateTime() != that.getCreateTime()) return false;
     if (getBeginTime() != that.getBeginTime()) return false;
-    if (getEndTime() != that.getEndTime()) return false;
     if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
     return getItemName() != null ? getItemName().equals(that.getItemName()) : that.getItemName() == null;
   }
@@ -46,7 +41,6 @@ public class LostItemPageItem {
     result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
     result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
     result = 31 * result + (int) (getBeginTime() ^ (getBeginTime() >>> 32));
-    result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
     return result;
   }
 
@@ -88,14 +82,6 @@ public class LostItemPageItem {
 
   public void setBeginTime(long beginTime) {
     this.beginTime = beginTime;
-  }
-
-  public long getEndTime() {
-    return endTime;
-  }
-
-  public void setEndTime(long endTime) {
-    this.endTime = endTime;
   }
 
 }

@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -44,18 +43,17 @@ public class LostItemServiceImplTestForUpdate {
     id = 123L;
     String title = "title";
     String itemName = "itemName";
-    long beginTime = 24L;
-    long endTime = 96L;
+    long lostTime = 24L;
     String description = "description";
     String picture1 = "picture1";
     String picture2 = "picture2";
     List<String> pictures = Arrays.asList(picture1, picture2);
-    updater = new LostItemCreator(title, itemName, beginTime, endTime, description);
+    updater = new LostItemCreator(title, itemName, lostTime, description);
     existedItem = new LostItem();
     existedItem.setId(id);
     existedItem.setTitle(title);
     existedItem.setItemName("item name");
-    existedItem.setBeginTime(12L);
+    existedItem.setLostTime(12L);
   }
 
   @Test

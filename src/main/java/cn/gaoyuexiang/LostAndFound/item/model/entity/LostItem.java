@@ -1,7 +1,6 @@
 package cn.gaoyuexiang.LostAndFound.item.model.entity;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "lostItem")
@@ -14,8 +13,7 @@ public class LostItem {
   private String owner;
   private String itemName;
   private long createTime;
-  private long beginTime;
-  private long endTime;
+  private long lostTime;
   @Column(length = 1024)
   private String description;
   private String state;
@@ -31,8 +29,7 @@ public class LostItem {
 
     if (getId() != lostItem.getId()) return false;
     if (getCreateTime() != lostItem.getCreateTime()) return false;
-    if (getBeginTime() != lostItem.getBeginTime()) return false;
-    if (getEndTime() != lostItem.getEndTime()) return false;
+    if (getLostTime() != lostItem.getLostTime()) return false;
     if (getTitle() != null ? !getTitle().equals(lostItem.getTitle()) : lostItem.getTitle() != null) return false;
     if (getOwner() != null ? !getOwner().equals(lostItem.getOwner()) : lostItem.getOwner() != null) return false;
     if (getItemName() != null ? !getItemName().equals(lostItem.getItemName()) : lostItem.getItemName() != null)
@@ -49,8 +46,7 @@ public class LostItem {
     result = 31 * result + (getOwner() != null ? getOwner().hashCode() : 0);
     result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
     result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
-    result = 31 * result + (int) (getBeginTime() ^ (getBeginTime() >>> 32));
-    result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
+    result = 31 * result + (int) (getLostTime() ^ (getLostTime() >>> 32));
     result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
     result = 31 * result + (getState() != null ? getState().hashCode() : 0);
     return result;
@@ -96,20 +92,12 @@ public class LostItem {
     this.createTime = createTime;
   }
 
-  public long getBeginTime() {
-    return beginTime;
+  public long getLostTime() {
+    return lostTime;
   }
 
-  public void setBeginTime(long beginTime) {
-    this.beginTime = beginTime;
-  }
-
-  public long getEndTime() {
-    return endTime;
-  }
-
-  public void setEndTime(long endTime) {
-    this.endTime = endTime;
+  public void setLostTime(long lostTime) {
+    this.lostTime = lostTime;
   }
 
   public String getDescription() {

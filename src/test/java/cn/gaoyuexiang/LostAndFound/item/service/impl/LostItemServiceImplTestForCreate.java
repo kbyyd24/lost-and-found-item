@@ -44,20 +44,16 @@ public class LostItemServiceImplTestForCreate {
 
   private String title;
   private String itemName;
-  private long beginTime;
-  private long endTime;
+  private long lostTime;
   private String description;
-  private List<String> pictures;
   private String username;
 
   @Before
   public void setUp() throws Exception {
     title = "title";
     itemName = "itemName";
-    beginTime = 123;
-    endTime = 147;
+    lostTime = 123;
     description = "description";
-    pictures = Arrays.asList("pic1", "pic2");
     username = "username";
 
   }
@@ -65,7 +61,7 @@ public class LostItemServiceImplTestForCreate {
   @Test
   public void should_return_LostItem_when_create_success() throws Exception {
     LostItemCreator lostItemCreator = new LostItemCreator(
-        title, itemName, beginTime, endTime, description);
+        title, itemName, lostTime, description);
     Long id = 0L;
     Long time = 123L;
     LostItem expectItem = new LostItem();
