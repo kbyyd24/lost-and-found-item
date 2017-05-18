@@ -12,7 +12,6 @@ public class LostItemPageItem {
   private long createTime;
   private long beginTime;
   private long endTime;
-  private String picture;
 
   public LostItemPageItem() {}
 
@@ -23,10 +22,6 @@ public class LostItemPageItem {
     this.createTime = lostItem.getCreateTime();
     this.beginTime = lostItem.getBeginTime();
     this.endTime = lostItem.getEndTime();
-    List<String> pictures = lostItem.getPictures();
-    if (pictures != null && !pictures.isEmpty()) {
-      this.picture = pictures.get(0);
-    }
   }
 
   @Override
@@ -41,8 +36,7 @@ public class LostItemPageItem {
     if (getBeginTime() != that.getBeginTime()) return false;
     if (getEndTime() != that.getEndTime()) return false;
     if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
-    if (getItemName() != null ? !getItemName().equals(that.getItemName()) : that.getItemName() != null) return false;
-    return getPicture() != null ? getPicture().equals(that.getPicture()) : that.getPicture() == null;
+    return getItemName() != null ? getItemName().equals(that.getItemName()) : that.getItemName() == null;
   }
 
   @Override
@@ -53,7 +47,6 @@ public class LostItemPageItem {
     result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
     result = 31 * result + (int) (getBeginTime() ^ (getBeginTime() >>> 32));
     result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
-    result = 31 * result + (getPicture() != null ? getPicture().hashCode() : 0);
     return result;
   }
 
@@ -105,11 +98,4 @@ public class LostItemPageItem {
     this.endTime = endTime;
   }
 
-  public String getPicture() {
-    return picture;
-  }
-
-  public void setPicture(String picture) {
-    this.picture = picture;
-  }
 }

@@ -8,18 +8,16 @@ public class FoundItemCreator {
   private String itemName;
   private long foundTime;
   private String description;
-  private List<String> pictures;
 
   public FoundItemCreator() {
   }
 
   public FoundItemCreator(String title, String itemName, long foundTime,
-                          String description, List<String> pictures) {
+                          String description) {
     this.title = title;
     this.itemName = itemName;
     this.foundTime = foundTime;
     this.description = description;
-    this.pictures = pictures;
   }
 
   @Override
@@ -32,9 +30,7 @@ public class FoundItemCreator {
     if (getFoundTime() != that.getFoundTime()) return false;
     if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
     if (getItemName() != null ? !getItemName().equals(that.getItemName()) : that.getItemName() != null) return false;
-    if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
-      return false;
-    return getPictures() != null ? getPictures().equals(that.getPictures()) : that.getPictures() == null;
+    return getDescription() != null ? getDescription().equals(that.getDescription()) : that.getDescription() == null;
   }
 
   @Override
@@ -43,7 +39,6 @@ public class FoundItemCreator {
     result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
     result = 31 * result + (int) (getFoundTime() ^ (getFoundTime() >>> 32));
     result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
-    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
     return result;
   }
 
@@ -79,11 +74,4 @@ public class FoundItemCreator {
     this.description = description;
   }
 
-  public List<String> getPictures() {
-    return pictures;
-  }
-
-  public void setPictures(List<String> pictures) {
-    this.pictures = pictures;
-  }
 }

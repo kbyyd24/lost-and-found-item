@@ -20,10 +20,6 @@ public class LostItem {
   private String description;
   private String state;
 
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "lostPicture")
-  private List<String> pictures;
-
   public LostItem() {}
 
   @Override
@@ -43,8 +39,7 @@ public class LostItem {
       return false;
     if (getDescription() != null ? !getDescription().equals(lostItem.getDescription()) : lostItem.getDescription() != null)
       return false;
-    if (getState() != null ? !getState().equals(lostItem.getState()) : lostItem.getState() != null) return false;
-    return getPictures() != null ? getPictures().equals(lostItem.getPictures()) : lostItem.getPictures() == null;
+    return getState() != null ? getState().equals(lostItem.getState()) : lostItem.getState() == null;
   }
 
   @Override
@@ -58,7 +53,6 @@ public class LostItem {
     result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
     result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
     result = 31 * result + (getState() != null ? getState().hashCode() : 0);
-    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
     return result;
   }
 
@@ -132,14 +126,6 @@ public class LostItem {
 
   public void setState(String state) {
     this.state = state;
-  }
-
-  public List<String> getPictures() {
-    return pictures;
-  }
-
-  public void setPictures(List<String> pictures) {
-    this.pictures = pictures;
   }
 
 }

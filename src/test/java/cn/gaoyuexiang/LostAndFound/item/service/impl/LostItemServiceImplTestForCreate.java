@@ -65,7 +65,7 @@ public class LostItemServiceImplTestForCreate {
   @Test
   public void should_return_LostItem_when_create_success() throws Exception {
     LostItemCreator lostItemCreator = new LostItemCreator(
-        title, itemName, beginTime, endTime, description, pictures);
+        title, itemName, beginTime, endTime, description);
     Long id = 0L;
     Long time = 123L;
     LostItem expectItem = new LostItem();

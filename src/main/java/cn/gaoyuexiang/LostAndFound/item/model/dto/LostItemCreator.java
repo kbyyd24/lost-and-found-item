@@ -9,7 +9,6 @@ public class LostItemCreator {
   private long beginTime;
   private long endTime;
   private String description;
-  private List<String> pictures;
 
   public LostItemCreator() {}
 
@@ -17,14 +16,12 @@ public class LostItemCreator {
                          String itemName,
                          long beginTime,
                          long endTime,
-                         String description,
-                         List<String> pictures) {
+                         String description) {
     this.title = title;
     this.itemName = itemName;
     this.beginTime = beginTime;
     this.endTime = endTime;
     this.description = description;
-    this.pictures = pictures;
   }
 
   @Override
@@ -38,9 +35,7 @@ public class LostItemCreator {
     if (getEndTime() != that.getEndTime()) return false;
     if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
     if (getItemName() != null ? !getItemName().equals(that.getItemName()) : that.getItemName() != null) return false;
-    if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
-      return false;
-    return getPictures() != null ? getPictures().equals(that.getPictures()) : that.getPictures() == null;
+    return getDescription() != null ? getDescription().equals(that.getDescription()) : that.getDescription() == null;
   }
 
   @Override
@@ -50,7 +45,6 @@ public class LostItemCreator {
     result = 31 * result + (int) (getBeginTime() ^ (getBeginTime() >>> 32));
     result = 31 * result + (int) (getEndTime() ^ (getEndTime() >>> 32));
     result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
-    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
     return result;
   }
 
@@ -94,11 +88,4 @@ public class LostItemCreator {
     this.description = description;
   }
 
-  public List<String> getPictures() {
-    return pictures;
-  }
-
-  public void setPictures(List<String> pictures) {
-    this.pictures = pictures;
-  }
 }

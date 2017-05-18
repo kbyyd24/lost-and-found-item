@@ -50,13 +50,12 @@ public class LostItemServiceImplTestForUpdate {
     String picture1 = "picture1";
     String picture2 = "picture2";
     List<String> pictures = Arrays.asList(picture1, picture2);
-    updater = new LostItemCreator(title, itemName, beginTime, endTime, description, pictures);
+    updater = new LostItemCreator(title, itemName, beginTime, endTime, description);
     existedItem = new LostItem();
     existedItem.setId(id);
     existedItem.setTitle(title);
     existedItem.setItemName("item name");
     existedItem.setBeginTime(12L);
-    existedItem.setPictures(Collections.singletonList(picture1));
   }
 
   @Test

@@ -74,8 +74,6 @@ public class LostItemServiceImpl implements LostItemService {
       return false;
     } else if (creator.getDescription() == null) {
       return false;
-    } else if (creator.getPictures() == null) {
-      return false;
     }
     return true;
   }
@@ -90,7 +88,6 @@ public class LostItemServiceImpl implements LostItemService {
     lostItem.setBeginTime(creator.getBeginTime());
     lostItem.setEndTime(creator.getEndTime());
     lostItem.setDescription(creator.getDescription());
-    lostItem.setPictures(creator.getPictures());
     lostItem.setState(ItemState.ENABLE.getValue());
     return lostItem;
   }
@@ -160,9 +157,6 @@ public class LostItemServiceImpl implements LostItemService {
     }
     if (needUpdate(updater.getDescription(), existItem.getDescription())) {
       existItem.setDescription(updater.getDescription());
-    }
-    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
-      existItem.setPictures(updater.getPictures());
     }
   }
 

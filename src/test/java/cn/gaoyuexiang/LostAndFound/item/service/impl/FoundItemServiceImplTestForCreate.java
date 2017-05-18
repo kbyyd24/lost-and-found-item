@@ -16,12 +16,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -46,7 +44,7 @@ public class FoundItemServiceImplTestForCreate {
   @Before
   public void setUp() throws Exception {
     createUser = "createUser";
-    creator = new FoundItemCreator("title", "itemName", 123L, "description", Collections.emptyList());
+    creator = new FoundItemCreator("title", "itemName", 123L, "description");
   }
 
   @Test
@@ -64,7 +62,7 @@ public class FoundItemServiceImplTestForCreate {
 
   @Test(expected = MissPropertyException.class)
   public void should_throw_MissPropertyException_when_foundItemCreator_miss_property() throws Exception {
-    creator.setPictures(null);
+    creator.setDescription(null);
     foundItemService.create(creator, createUser);
   }
 }

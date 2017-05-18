@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -37,7 +35,7 @@ public class FoundItemServiceImplTestForUpdate {
   public void setUp() throws Exception {
     itemId = 12L;
     username = "username";
-    updater = new FoundItemCreator("title", "itemName", 1L, "description", Collections.emptyList());
+    updater = new FoundItemCreator("title", "itemName", 1L, "description");
   }
 
   @Test

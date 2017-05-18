@@ -7,7 +7,6 @@ public class FoundItemPageItem {
   private String itemName;
   private long createTime;
   private long foundTime;
-  private String picture;
 
   public FoundItemPageItem() {}
 
@@ -22,8 +21,7 @@ public class FoundItemPageItem {
     if (getCreateTime() != that.getCreateTime()) return false;
     if (getFoundTime() != that.getFoundTime()) return false;
     if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
-    if (getItemName() != null ? !getItemName().equals(that.getItemName()) : that.getItemName() != null) return false;
-    return getPicture() != null ? getPicture().equals(that.getPicture()) : that.getPicture() == null;
+    return getItemName() != null ? getItemName().equals(that.getItemName()) : that.getItemName() == null;
   }
 
   @Override
@@ -33,7 +31,6 @@ public class FoundItemPageItem {
     result = 31 * result + (getItemName() != null ? getItemName().hashCode() : 0);
     result = 31 * result + (int) (getCreateTime() ^ (getCreateTime() >>> 32));
     result = 31 * result + (int) (getFoundTime() ^ (getFoundTime() >>> 32));
-    result = 31 * result + (getPicture() != null ? getPicture().hashCode() : 0);
     return result;
   }
 
@@ -77,11 +74,4 @@ public class FoundItemPageItem {
     this.foundTime = foundTime;
   }
 
-  public String getPicture() {
-    return picture;
-  }
-
-  public void setPicture(String picture) {
-    this.picture = picture;
-  }
 }

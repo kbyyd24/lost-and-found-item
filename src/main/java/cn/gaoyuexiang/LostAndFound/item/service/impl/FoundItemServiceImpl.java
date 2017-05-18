@@ -87,8 +87,7 @@ public class FoundItemServiceImpl implements FoundItemService {
         && creator.getTitle() != null
         && creator.getItemName() != null
         && creator.getFoundTime() != 0L
-        && creator.getDescription() != null
-        && creator.getPictures() != null;
+        && creator.getDescription() != null;
   }
 
   private FoundItem buildItem(FoundItemCreator creator, String createUser) {
@@ -101,7 +100,6 @@ public class FoundItemServiceImpl implements FoundItemService {
     foundItem.setCreateTime(timeService.getCurrentTime());
     foundItem.setFoundTime(creator.getFoundTime());
     foundItem.setDescription(creator.getDescription());
-    foundItem.setPictures(creator.getPictures());
     foundItem.setState(ItemState.ENABLE.getValue());
     return foundItem;
   }
@@ -118,10 +116,6 @@ public class FoundItemServiceImpl implements FoundItemService {
     pageItem.setItemName(foundItem.getItemName());
     pageItem.setCreateTime(foundItem.getCreateTime());
     pageItem.setFoundTime(foundItem.getFoundTime());
-    List<String> pictures = foundItem.getPictures();
-    if (pictures != null && !pictures.isEmpty()) {
-      pageItem.setPicture(pictures.get(0));
-    }
     return pageItem;
   }
 
@@ -141,9 +135,6 @@ public class FoundItemServiceImpl implements FoundItemService {
     }
     if (needUpdate(updater.getDescription(), existItem.getDescription())) {
       existItem.setDescription(updater.getDescription());
-    }
-    if (needUpdate(updater.getPictures(), existItem.getPictures())) {
-      existItem.setPictures(updater.getPictures());
     }
   }
 }

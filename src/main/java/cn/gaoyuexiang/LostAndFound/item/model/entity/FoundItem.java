@@ -18,10 +18,6 @@ public class FoundItem {
   private String description;
   private String state;
 
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "foundPicture")
-  private List<String> pictures;
-
   public FoundItem() {}
 
   @Override
@@ -40,8 +36,7 @@ public class FoundItem {
       return false;
     if (getDescription() != null ? !getDescription().equals(foundItem.getDescription()) : foundItem.getDescription() != null)
       return false;
-    if (getState() != null ? !getState().equals(foundItem.getState()) : foundItem.getState() != null) return false;
-    return getPictures() != null ? getPictures().equals(foundItem.getPictures()) : foundItem.getPictures() == null;
+    return getState() != null ? getState().equals(foundItem.getState()) : foundItem.getState() == null;
   }
 
   @Override
@@ -54,7 +49,6 @@ public class FoundItem {
     result = 31 * result + (int) (getFoundTime() ^ (getFoundTime() >>> 32));
     result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
     result = 31 * result + (getState() != null ? getState().hashCode() : 0);
-    result = 31 * result + (getPictures() != null ? getPictures().hashCode() : 0);
     return result;
   }
 
@@ -122,11 +116,4 @@ public class FoundItem {
     this.state = state;
   }
 
-  public List<String> getPictures() {
-    return pictures;
-  }
-
-  public void setPictures(List<String> pictures) {
-    this.pictures = pictures;
-  }
 }
