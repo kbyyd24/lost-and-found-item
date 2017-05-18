@@ -7,5 +7,6 @@ import org.springframework.stereotype.Component;
 public class JerseyConfig extends ResourceConfig {
   public JerseyConfig() {
     packages("cn.gaoyuexiang.LostAndFound.item.resource");
+    register(CORSResponseFilter.class);
   }
 }
